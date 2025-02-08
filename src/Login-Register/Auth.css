@@ -1,0 +1,47 @@
+.auth-container {
+  background: #222;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  width: 350px;
+  text-align: center;
+  margin: auto;
+}
+
+h2 {
+  color: white;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
+  margin: 10px 0;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button {
+  background: #646cff;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 5px;
+}
+
+.message {
+  color: #ff5555;
+  font-size: 14px;
+}
+
+.toggle {
+  color: #aaa;
+  cursor: pointer;
+  margin-top: 10px;
+}
