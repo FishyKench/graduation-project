@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 import "./Auth.css";
 
 const supabase = createClient(
-  "https://hbgtjdhhhtgyteetvyam.supabase.co",
+  "https://hbgtjdhhhtgyteetvyam.supabase.co/",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiZ3RqZGhoaHRneXRlZXR2eWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgyOTE2NzEsImV4cCI6MjA1Mzg2NzY3MX0.CAFppOUVhLqLD6Fp44vKYn6MdhgFmgADjdZ8A7oLNTk"
 );
 
@@ -15,126 +15,133 @@ export default function Auth() {
   const [lname, setLname] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [region, setRegion] = useState(""); // Kept as "region"
-  const [city, setCity] = useState(""); // Kept as "city"
+  const [region, setRegion] = useState("");
+  const [city, setCity] = useState("");
   const [degree, setDegree] = useState("");
   const [interest, setInterest] = useState("");
   const [cv, setCv] = useState("");
-  const [isLogin, setIsLogin] = useState(true);
-  const [message, setMessage] = useState("");
   const [userType, setUserType] = useState("volunteer");
+  const [regions, setRegions] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const fetchRegions = async () => {
+      const { data, error } = await supabase.from("regions").select("id, name");
+      if (!error) setRegions(data);
+    };
+
+    const fetchCities = async () => {
+      const { data, error } = await supabase.from("cities").select("id, name");
+      if (!error) setCities(data);
+    };
+
+    fetchRegions();
+    fetchCities();
+  }, []);
 
   const handleAuth = async (e) => {
     e.preventDefault();
     setMessage("");
 
-    if (isLogin) {
-      console.log("🔵 Attempting login for:", email);
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error) {
-        setMessage(error.message);
-      } else {
-        console.log("✅ Login Successful:", data.user);
-        fetchUserData(data.user.id);
-        setMessage("Login successful!");
-      }
-    } else {
-      console.log("🔵 Attempting registration for:", email);
-      const { data, error } = await supabase.auth.signUp({ email, password });
-
-      if (error) {
-        setMessage(error.message);
-        return;
-      }
-
-      console.log("✅ User created in auth.users:", data.user);
-
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      console.log("📩 Inserting user metadata:", email);
-
-      const level = userType === "volunteer" ? 1 : 2;
-
-      const { data: insertData, error: userError } = await supabase
-        .from("users")
-        .insert([
-          {
-            id: data.user.id,
-            email,
-            fname,
-            mname,
-            lname,
-            phone_number: phone,
-            location: location ? location.toString() : null,
-            region: parseInt(region) || null, // No "_id" suffix, keeping your column names
-            city: parseInt(city) || null, // No "_id" suffix, keeping your column names
-            degree: degree ? degree.toString() : null,
-            interest: interest ? interest.toString() : null,
-            cv: cv || null,
-            created_at: new Date().toISOString(),
-            level: level,
-          },
-        ])
-        .select();
-
-      if (userError) {
-        console.error("❌ User Table Insert Error:", userError);
-        setMessage("Error saving user info: " + userError.message);
-      } else {
-        console.log("✅ Metadata Inserted:", insertData);
-        setMessage("Registration successful! Check your email.");
-      }
-    }
-  };
-
-  const fetchUserData = async (userId) => {
-    console.log("🔍 Fetching user data for ID:", userId);
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", userId)
-      .single();
+    console.log("🔵 Attempting registration for:", email);
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
-      console.error("❌ Fetch Error:", error);
+      setMessage(error.message);
+      return;
+    }
+
+    console.log("✅ User created in auth.users:", data.user);
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    console.log("📩 Inserting user metadata:", email);
+
+    const { error: userError } = await supabase.from("users").insert([
+      {
+        id: data.user.id,
+        email,
+        fname,
+        mname,
+        lname,
+        phone_number: phone,
+        location: location ? location.toString() : null,
+        region: parseInt(region) || null,
+        city: parseInt(city) || null,
+        degree: degree ? degree.toString() : null,
+        interest: interest ? interest.toString() : null,
+        cv: cv || null,
+        level: userType === "volunteer" ? 1 : 2,
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (userError) {
+      setMessage("Error saving user info: " + userError.message);
     } else {
-      console.log("✅ User Data:", data);
+      console.log("✅ Metadata Inserted");
+      setMessage("Registration successful! Check your email.");
     }
   };
 
   return (
     <div className="auth-container">
-      <h2>{isLogin ? "Login" : "Register"}</h2>
+      <h2>Register</h2>
+      <div className="radio-group">
+        <label>
+          <input
+            type="radio"
+            value="volunteer"
+            checked={userType === "volunteer"}
+            onChange={() => setUserType("volunteer")}
+          />
+          Volunteer
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="organization"
+            checked={userType === "organization"}
+            onChange={() => setUserType("organization")}
+          />
+          Organization
+        </label>
+      </div>
       {message && <p className="message">{message}</p>}
       <form onSubmit={handleAuth}>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <input type="text" placeholder="First Name" value={fname} onChange={(e) => setFname(e.target.value)} required />
+        <input type="text" placeholder="Middle Name" value={mname} onChange={(e) => setMname(e.target.value)} />
+        <input type="text" placeholder="Last Name" value={lname} onChange={(e) => setLname(e.target.value)} required />
+        <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+        <input type="text" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required />
 
-        {!isLogin && (
-          <>
-            <select value={userType} onChange={(e) => setUserType(e.target.value)}>
-              <option value="volunteer">Volunteer</option>
-              <option value="organization">Organization</option>
-            </select>
-            <input type="text" placeholder="First Name" value={fname} onChange={(e) => setFname(e.target.value)} required />
-            <input type="text" placeholder="Middle Name" value={mname} onChange={(e) => setMname(e.target.value)} />
-            <input type="text" placeholder="Last Name" value={lname} onChange={(e) => setLname(e.target.value)} required />
-            <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-            <input type="text" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} required />
-            <input type="number" placeholder="Region ID" value={region} onChange={(e) => setRegion(e.target.value)} required />
-            <input type="number" placeholder="City ID" value={city} onChange={(e) => setCity(e.target.value)} required />
-            <input type="text" placeholder="Degree" value={degree} onChange={(e) => setDegree(e.target.value)} required />
-            <input type="text" placeholder="Interest" value={interest} onChange={(e) => setInterest(e.target.value)} required />
-            <input type="text" placeholder="CV Link (Optional)" value={cv} onChange={(e) => setCv(e.target.value)} />
-          </>
-        )}
+        <select value={region} onChange={(e) => setRegion(e.target.value)} required>
+          <option value="">Select Region</option>
+          {regions.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+        </select>
 
-        <button type="submit">{isLogin ? "Login" : "Register"}</button>
+        <select value={city} onChange={(e) => setCity(e.target.value)} required>
+          <option value="">Select City</option>
+          {cities.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+
+        <input type="text" placeholder="Degree" value={degree} onChange={(e) => setDegree(e.target.value)} required />
+        <input type="text" placeholder="Interest" value={interest} onChange={(e) => setInterest(e.target.value)} required />
+        <input type="text" placeholder="CV Link (Optional)" value={cv} onChange={(e) => setCv(e.target.value)} />
+
+        <button type="submit">Register</button>
       </form>
-      <p onClick={() => setIsLogin(!isLogin)} className="toggle">
-        {isLogin ? "Don't have an account? Register" : "Already have an account? Login"}
-      </p>
     </div>
   );
 }
