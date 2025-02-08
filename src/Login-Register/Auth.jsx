@@ -98,6 +98,7 @@ export default function Auth() {
     }
   };
 
+  /* meme */
   return (
     <div className="auth-container">
       <h2>{isLogin ? "Login" : "Register"}</h2>
