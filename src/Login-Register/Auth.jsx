@@ -15,13 +15,14 @@ export default function Auth() {
   const [lname, setLname] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
-  const [region, setRegion] = useState("");
-  const [city, setCity] = useState("");
+  const [region, setRegion] = useState(""); // Kept as "region"
+  const [city, setCity] = useState(""); // Kept as "city"
   const [degree, setDegree] = useState("");
   const [interest, setInterest] = useState("");
   const [cv, setCv] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState("");
+  const [userType, setUserType] = useState("volunteer");
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -49,30 +50,36 @@ export default function Auth() {
 
       console.log("✅ User created in auth.users:", data.user);
 
-      // Ensure Supabase syncs the new user before inserting metadata
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       console.log("📩 Inserting user metadata:", email);
 
-      const { data: insertData, error: userError } = await supabase.from("users").insert([
-        {
-          id: data.user.id,
-          email,
-          fname,
-          mname,
-          lname,
-          phone_number: phone,
-          location: location ? location.toString() : null,
-          region: parseInt(region) || null,
-          city: parseInt(city) || null,
-          degree: degree ? degree.toString() : null,
-          interest: interest ? interest.toString() : null,
-          cv: cv || null,
-          created_at: new Date().toISOString(),
-        },
-      ]).select();
+      const level = userType === "volunteer" ? 1 : 2;
+
+      const { data: insertData, error: userError } = await supabase
+        .from("users")
+        .insert([
+          {
+            id: data.user.id,
+            email,
+            fname,
+            mname,
+            lname,
+            phone_number: phone,
+            location: location ? location.toString() : null,
+            region: parseInt(region) || null, // No "_id" suffix, keeping your column names
+            city: parseInt(city) || null, // No "_id" suffix, keeping your column names
+            degree: degree ? degree.toString() : null,
+            interest: interest ? interest.toString() : null,
+            cv: cv || null,
+            created_at: new Date().toISOString(),
+            level: level,
+          },
+        ])
+        .select();
 
       if (userError) {
+        console.error("❌ User Table Insert Error:", userError);
         setMessage("Error saving user info: " + userError.message);
       } else {
         console.log("✅ Metadata Inserted:", insertData);
@@ -103,9 +110,13 @@ export default function Auth() {
       <form onSubmit={handleAuth}>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        
+
         {!isLogin && (
           <>
+            <select value={userType} onChange={(e) => setUserType(e.target.value)}>
+              <option value="volunteer">Volunteer</option>
+              <option value="organization">Organization</option>
+            </select>
             <input type="text" placeholder="First Name" value={fname} onChange={(e) => setFname(e.target.value)} required />
             <input type="text" placeholder="Middle Name" value={mname} onChange={(e) => setMname(e.target.value)} />
             <input type="text" placeholder="Last Name" value={lname} onChange={(e) => setLname(e.target.value)} required />
