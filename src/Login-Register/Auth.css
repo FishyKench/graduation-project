@@ -1,65 +1,103 @@
+/* Ensure the entire page is centered */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e1e1e; /* Dark background for contrast */
+}
+
+/* Container that holds everything */
 .auth-container {
-  background: #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px; /* Adjust as needed */
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-  width: 350px;
-  text-align: center;
-  margin: auto;
-}
-
-h2 {
+  background: #222;
   color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+  text-align: center;
 }
 
+/* Form styles */
 form {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  width: 100%;
 }
 
-input {
-  margin: 10px 0;
-  padding: 10px;
-  border: none;
+input, select, button {
+  padding: 12px;
   border-radius: 5px;
+  border: none;
   font-size: 16px;
 }
 
 button {
-  background: #646cff;
+  background-color: #6a5acd;
   color: white;
-  border: none;
-  padding: 10px;
   cursor: pointer;
-  font-size: 16px;
-  border-radius: 5px;
+  font-weight: bold;
 }
 
-.message {
-  color: #ff5555;
-  font-size: 14px;
+button:hover {
+  background-color: #483d8b;
 }
 
 .toggle {
-  color: #aaa;
-  cursor: pointer;
   margin-top: 10px;
-}
-.radio-group {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 15px;
+  cursor: pointer;
+  color: #6a5acd;
+  font-weight: bold;
 }
 
-.radio-group label {
+.toggle:hover {
+  text-decoration: underline;
+}
+/* Ensure full-page background */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 16px;
-  cursor: pointer;
+  justify-content: center;
+  background-color: #1e1e1e; /* Dark background */
 }
 
-.radio-group input {
-  transform: scale(1.2);
+/* Centered auth container */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  padding: 20px;
+  background: #222;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+  text-align: center;
 }
+
+/* Fullscreen background effect */
+.auth-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+

@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
+import supabase from "../createClient"; // Ensure this is correctly imported
 import "./Auth.css";
-
-const supabase = createClient(
-  "https://hbgtjdhhhtgyteetvyam.supabase.co/",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhiZ3RqZGhoaHRneXRlZXR2eWFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzgyOTE2NzEsImV4cCI6MjA1Mzg2NzY3MX0.CAFppOUVhLqLD6Fp44vKYn6MdhgFmgADjdZ8A7oLNTk"
-);
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -25,6 +21,7 @@ export default function Auth() {
   const [cities, setCities] = useState([]);
   const [message, setMessage] = useState("");
   const [isLogin, setIsLogin] = useState(true);
+  const navigate = useNavigate(); // Redirect after login
 
   useEffect(() => {
     const fetchRegions = async () => {
@@ -44,32 +41,33 @@ export default function Auth() {
   const handleAuth = async (e) => {
     e.preventDefault();
     setMessage("");
-
+  
     if (isLogin) {
       console.log("🔵 Attempting login for:", email);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
+  
       if (error) {
         setMessage(error.message);
       } else {
         console.log("✅ Login Successful:", data.user);
         setMessage("Login successful!");
+        navigate("/home"); // Redirect to home page
       }
     } else {
       console.log("🔵 Attempting registration for:", email);
       const { data, error } = await supabase.auth.signUp({ email, password });
-
+  
       if (error) {
         setMessage(error.message);
         return;
       }
-
+  
       console.log("✅ User created in auth.users:", data.user);
-
+  
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
+  
       console.log("📩 Inserting user metadata:", email);
-
+  
       const { error: userError } = await supabase.from("users").insert([
         {
           id: data.user.id,
@@ -88,17 +86,32 @@ export default function Auth() {
           created_at: new Date().toISOString(),
         },
       ]);
-
+  
       if (userError) {
         setMessage("Error saving user info: " + userError.message);
       } else {
         console.log("✅ Metadata Inserted");
-        setMessage("Registration successful! Check your email.");
+        setMessage("Registration successful! Redirecting...");
+  
+        // Wait briefly before redirecting to ensure session sync
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+        // Log the user in automatically
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+  
+        if (loginError) {
+          setMessage("Error logging in after registration: " + loginError.message);
+        } else {
+          console.log("✅ Auto-login successful:", loginData.user);
+          navigate("/home"); // Redirect to home page
+        }
       }
     }
   };
-
-  /* meme */
+  
   return (
     <div className="auth-container">
       <h2>{isLogin ? "Login" : "Register"}</h2>
