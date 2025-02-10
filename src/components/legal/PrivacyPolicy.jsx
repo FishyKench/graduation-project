@@ -1,0 +1,86 @@
+import React from "react";
+import Header from "../auth/Header";
+import Footer from "../auth/Footer";
+
+const PrivacyPolicy = () => {
+  return (
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
+
+      <main className="flex-1 py-12 px-4">
+        <div className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            Privacy Policy
+          </h1>
+
+          <div className="prose prose-purple max-w-none">
+            <p className="text-gray-600 mb-6">
+              Last updated: {new Date().toLocaleDateString()}
+            </p>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                Information We Collect
+              </h2>
+              <p className="mb-4">
+                We collect information that you provide directly to us when you:
+              </p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Create an account</li>
+                <li>Fill out your profile</li>
+                <li>Apply for opportunities</li>
+                <li>Contact us</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                How We Use Your Information
+              </h2>
+              <p className="mb-4">We use the information we collect to:</p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Provide and improve our services</li>
+                <li>Match volunteers with opportunities</li>
+                <li>Communicate with you about opportunities</li>
+                <li>Ensure platform security</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">
+                Information Sharing
+              </h2>
+              <p>
+                We do not sell your personal information. We share your
+                information only with:
+              </p>
+              <ul className="list-disc pl-6 mb-4">
+                <li>Organizations you apply to volunteer with</li>
+                <li>Service providers who assist our operations</li>
+                <li>When required by law</li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
+              <p>
+                If you have any questions about this Privacy Policy, please
+                contact us at:{" "}
+                <a
+                  href="mailto:info@volunect.com"
+                  className="text-purple-600 hover:text-purple-700"
+                >
+                  info@volunect.com
+                </a>
+              </p>
+            </section>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default PrivacyPolicy;
