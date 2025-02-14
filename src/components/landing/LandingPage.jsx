@@ -86,7 +86,7 @@ const LandingPage = () => {
               </p>
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 rounded-lg text-lg"
-                onClick={() => (window.location.href = "/register")}
+                onClick={() => (window.location.href = "/announcements")}
               >
                 Start Your Journey
               </Button>
