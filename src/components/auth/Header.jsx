@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -15,9 +15,74 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import supabase from "../../../createClient";
 
 const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [firstName, setFirstName] = useState(
+    localStorage.getItem("firstName") || "Guest"
+  ); // ✅ Get first name from localStorage
+  const [loading, setLoading] = useState(true); // ✅ FIXED: Added missing state
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      setLoading(true);
+
+      // ✅ Check localStorage first
+      const storedUser = localStorage.getItem("user");
+      const storedFirstName = localStorage.getItem("firstName");
+
+      if (storedUser && storedFirstName) {
+        setUser(JSON.parse(storedUser));
+        setFirstName(storedFirstName);
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Fetch user from Supabase if not in localStorage
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !authData.user) {
+        setUser(null);
+        setFirstName("");
+        localStorage.removeItem("user");
+        localStorage.removeItem("firstName");
+        setLoading(false);
+        return;
+      }
+
+      setUser(authData.user);
+      localStorage.setItem("user", JSON.stringify(authData.user));
+
+      // ✅ Fetch first name from "users" table
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("fname")
+        .eq("id", authData.user.id)
+        .single();
+
+      if (!userError && userData) {
+        setFirstName(userData.fname);
+        localStorage.setItem("firstName", userData.fname);
+      }
+
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, []);
+
+  // ✅ Logout function
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem("user");
+    localStorage.removeItem("firstName");
+    setUser(null);
+    setFirstName("");
+    navigate("/login"); // ✅ Redirect to login page after signing out
+  };
+
   return (
     <header className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
@@ -60,22 +125,37 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
             <Search className="absolute right-2 h-4 w-4 text-gray-500" />
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center gap-2">
-            <Button
-              variant="ghost"
-              className="text-purple-600"
-              onClick={() => navigate("/login")}
-            >
-              Sign In
-            </Button>
-            <Button
-              className="bg-purple-600 hover:bg-purple-700 text-white"
-              onClick={() => navigate("/register")}
-            >
-              Register
-            </Button>
-          </div>
+          {/* ✅ Instantly show name from localStorage (No More Flickering!) */}
+          {user ? (
+            <div className="hidden md:flex items-center gap-2">
+              <span className="text-purple-600 font-medium">
+                Welcome, {firstName}!
+              </span>
+              <Button
+                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
+                onClick={handleLogout}
+              >
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <div className="hidden md:flex items-center gap-2">
+              {/* Sign In & Register (only if user is NOT logged in) */}
+              <Button
+                variant="ghost"
+                className="text-purple-600"
+                onClick={() => navigate("/login")}
+              >
+                Sign In
+              </Button>
+              <Button
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </Button>
+            </div>
+          )}
 
           {/* Language Selector */}
           <DropdownMenu>
