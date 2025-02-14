@@ -8,44 +8,48 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Megaphone, GraduationCap, School, BookOpen } from "lucide-react";
-import supabase from "../../../createClient"; // ✅ Ensure correct import
+import supabase from "../../../createClient";
 
 const AnnouncementsDropdown = () => {
   const [selectedDegree, setSelectedDegree] = useState("all");
   const [announcements, setAnnouncements] = useState([]);
 
+  // ✅ Fetch announcements from Supabase
   useEffect(() => {
     const fetchAnnouncements = async () => {
-      let query = supabase.from("announcements").select("*");
+      const { data, error } = await supabase.from("announcements")
+        .select("id, title, organization, degree, image_url")
+        .limit(9); // Get 9 max (3 per category)
 
-      if (selectedDegree !== "all") {
-        query = query.eq("degree", selectedDegree);
-      }
-
-      const { data, error } = await query;
       if (error) {
-        console.error("Error fetching announcements:", error);
-        return;
+        console.error("❌ Error fetching announcements:", error.message);
+      } else {
+        console.log("✅ All Fetched Announcements:", data);
+        setAnnouncements(data);
       }
-
-      let finalAnnouncements = data;
-
-      if (selectedDegree === "all") {
-        // ✅ Shuffle and get 3 random announcements
-        finalAnnouncements = data.sort(() => 0.5 - Math.random()).slice(0, 3);
-      }
-
-      setAnnouncements(finalAnnouncements);
     };
 
     fetchAnnouncements();
-  }, [selectedDegree]);
+  }, []);
+
+  // ✅ Handle filtering logic
+  let filteredAnnouncements = announcements.filter(
+    (a) => selectedDegree === "all" || a.degree.trim().toLowerCase() === selectedDegree.trim().toLowerCase()
+  );
+
+  // ✅ When "All Programs" is selected, shuffle & pick 3 random ones
+  if (selectedDegree === "all" && filteredAnnouncements.length > 3) {
+    filteredAnnouncements = filteredAnnouncements.sort(() => 0.5 - Math.random()).slice(0, 3);
+  }
+
+  console.log("🔵 Selected Degree:", selectedDegree);
+  console.log("🔍 Filtered Announcements:", filteredAnnouncements);
 
   const degreeFilters = [
     { id: "all", label: "All Programs", icon: GraduationCap },
-    { id: "high-school", label: "High School", icon: School },
-    { id: "undergraduate", label: "Undergraduate", icon: BookOpen },
-    { id: "co-op", label: "CO-OP", icon: GraduationCap },
+    { id: "High School", label: "High School", icon: School }, // ✅ Ensure exact match
+    { id: "Undergraduate", label: "Undergraduate", icon: BookOpen },
+    { id: "CO-OP", label: "CO-OP", icon: GraduationCap },
   ];
 
   return (
@@ -57,6 +61,7 @@ const AnnouncementsDropdown = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[350px] p-2">
+        
         {/* Degree Filters */}
         <div className="mb-2 p-2 bg-gray-50 rounded-md">
           <div className="text-sm font-medium text-gray-500 mb-2">
@@ -84,8 +89,8 @@ const AnnouncementsDropdown = () => {
 
         {/* Announcements List */}
         <div className="max-h-[400px] overflow-y-auto">
-          {announcements.length > 0 ? (
-            announcements.map((announcement, index) => (
+          {filteredAnnouncements.length > 0 ? (
+            filteredAnnouncements.map((announcement, index) => (
               <DropdownMenuItem
                 key={index}
                 className="flex items-start gap-3 p-2 cursor-pointer hover:bg-gray-50"
@@ -103,15 +108,15 @@ const AnnouncementsDropdown = () => {
                     {announcement.organization}
                   </div>
                   <div className="text-xs text-purple-600 mt-1 capitalize">
-                    {announcement.type}
+                    {announcement.degree}
                   </div>
                 </div>
               </DropdownMenuItem>
             ))
           ) : (
-            <div className="text-center text-sm text-gray-500 py-4">
+            <p className="text-center text-gray-500 text-sm py-2">
               No announcements found.
-            </div>
+            </p>
           )}
         </div>
 
