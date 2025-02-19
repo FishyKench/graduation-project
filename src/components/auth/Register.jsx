@@ -8,7 +8,7 @@ import supabase from "../../../createClient"; // ✅ Import Supabase
 
 const Register = () => {
   const [userType, setUserType] = useState("volunteer");
-  const [regions, setRegions] = useState([]); // ✅ Fetch from DB
+  const [regions, setRegions] = useState([]); 
   const [cities, setCities] = useState([]); // ✅ Fetch from DB
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
