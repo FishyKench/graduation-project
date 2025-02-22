@@ -1,26 +1,102 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
+import supabase from "../../../createClient";
 
 const SettingsPage = () => {
   const [formData, setFormData] = useState({
-    email: "john.doe@example.com",
-    type: "personal", // or "organization"
-    name: "Tech Company Inc.",
-    first_name: "John",
-    last_name: "Doe",
-    phone: "+1234567890",
-    location: "San Francisco",
-    notifications: true
+    email: "",
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    phone: "",
+    region: "",
+    city: "",
   });
 
-  const [passwords, setPasswords] = useState({
-    current: "",
-    new: "",
-    confirm: ""
-  });
+  const [regions, setRegions] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [filteredCities, setFilteredCities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setLoading(true);
+
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) {
+        console.error("❌ Auth Error:", authError?.message);
+        setLoading(false);
+        return;
+      }
+
+      const userId = authData.user.id;
+      console.log("📌 Logged-in User ID:", userId);
+
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select("fname, mname, lname, phone_number, region, city, email")
+        .eq("id", userId)
+        .single();
+
+      console.log("📌 User Data:", userData);
+
+      if (userError) {
+        console.error("❌ Error fetching user data:", userError.message);
+      } else {
+        setFormData({
+          email: userData.email || "",
+          first_name: userData.fname || "",
+          middle_name: userData.mname || "",
+          last_name: userData.lname || "",
+          phone: userData.phone_number || "",
+          region: userData.region || "",
+          city: userData.city || "",
+        });
+      }
+
+      setLoading(false);
+    };
+
+    const fetchRegionsAndCities = async () => {
+      const { data: regionData, error: regionError } = await supabase.from("regions").select("id, name");
+      if (regionError) {
+        console.error("❌ Error fetching regions:", regionError.message);
+      } else {
+        setRegions(regionData);
+      }
+
+      const { data: cityData, error: cityError } = await supabase.from("cities").select("id, name, region_id");
+      if (cityError) {
+        console.error("❌ Error fetching cities:", cityError.message);
+      } else {
+        setCities(cityData);
+      }
+    };
+
+    fetchUserData();
+    fetchRegionsAndCities();
+  }, []);
+
+  const handleRegionChange = (selectedRegionId) => {
+    setFormData(prev => ({
+      ...prev,
+      region: selectedRegionId,
+      city: "",
+    }));
+
+    setFilteredCities(cities.filter(city => city.region_id.toString() === selectedRegionId));
+  };
+
+  const handleCityChange = (selectedCityId) => {
+    setFormData(prev => ({
+      ...prev,
+      city: selectedCityId,
+    }));
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -30,32 +106,38 @@ const SettingsPage = () => {
     }));
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswords(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleNotificationToggle = () => {
-    setFormData(prev => ({
-      ...prev,
-      notifications: !prev.notifications
-    }));
-  };
-
-  const handleProfileSubmit = (e) => {
+  const handleProfileSubmit = async (e) => {
     e.preventDefault();
     console.log("Profile data to save:", formData);
-    // Add your save logic here
+
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError || !authData.user) {
+      console.error("❌ Auth Error:", authError?.message);
+      return;
+    }
+
+    const userId = authData.user.id;
+
+    const { error } = await supabase
+      .from("users")
+      .update({
+        fname: formData.first_name,
+        mname: formData.middle_name,
+        lname: formData.last_name,
+        phone_number: formData.phone,
+        region: formData.region,
+        city: formData.city,
+      })
+      .eq("id", userId);
+
+    if (error) {
+      console.error("❌ Error updating profile:", error.message);
+    } else {
+      console.log("✅ Profile updated successfully!");
+    }
   };
 
-  const handlePasswordSubmit = (e) => {
-    e.preventDefault();
-    console.log("Password data to save:", passwords);
-    // Add your password update logic here
-  };
+  if (loading) return <p className="text-center py-10">Loading settings...</p>;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -64,163 +146,82 @@ const SettingsPage = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
-          <div className="space-y-6">
-            {/* Profile Settings */}
-            <form onSubmit={handleProfileSubmit} className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-medium mb-4">Profile Settings</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <Input 
-                    type="email" 
-                    name="email"
-                    value={formData.email} 
-                    disabled 
-                  />
-                </div>
-
-                {formData.type === "organization" ? (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Organization Name
-                      </label>
-                      <Input 
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone
-                      </label>
-                      <Input 
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Location
-                      </label>
-                      <Input 
-                        name="location"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          First Name
-                        </label>
-                        <Input 
-                          name="first_name"
-                          value={formData.first_name}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Last Name
-                        </label>
-                        <Input 
-                          name="last_name"
-                          value={formData.last_name}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone
-                      </label>
-                      <Input 
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </>
-                )}
-
-                <Button type="submit" className="w-full">Save Changes</Button>
+          <form onSubmit={handleProfileSubmit} className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-lg font-medium mb-4">Profile Settings</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <Input type="email" name="email" value={formData.email} disabled />
               </div>
-            </form>
 
-            {/* Password Settings */}
-            <form onSubmit={handlePasswordSubmit} className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-medium mb-4">Change Password</h2>
-              <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Password
+                    First Name
                   </label>
-                  <Input 
-                    type="password"
-                    name="current"
-                    value={passwords.current}
-                    onChange={handlePasswordChange}
-                  />
+                  <Input name="first_name" value={formData.first_name} onChange={handleInputChange} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    New Password
+                    Middle Name
                   </label>
-                  <Input 
-                    type="password"
-                    name="new"
-                    value={passwords.new}
-                    onChange={handlePasswordChange}
-                  />
+                  <Input name="middle_name" value={formData.middle_name} onChange={handleInputChange} />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm New Password
+                    Last Name
                   </label>
-                  <Input 
-                    type="password"
-                    name="confirm"
-                    value={passwords.confirm}
-                    onChange={handlePasswordChange}
-                  />
-                </div>
-                <Button type="submit" variant="outline" className="w-full">
-                  Update Password
-                </Button>
-              </div>
-            </form>
-
-            {/* Notification Settings */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-medium mb-4">
-                Notification Settings
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-medium">Email Notifications</h3>
-                    <p className="text-sm text-gray-500">
-                      Receive updates about new opportunities
-                    </p>
-                  </div>
-                  <input 
-                    type="checkbox" 
-                    className="toggle" 
-                    checked={formData.notifications}
-                    onChange={handleNotificationToggle}
-                  />
+                  <Input name="last_name" value={formData.last_name} onChange={handleInputChange} />
                 </div>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <Input name="phone" value={formData.phone} onChange={handleInputChange} />
+              </div>
+
+              {/* Region & City Dropdowns Side by Side */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Region</label>
+                  <Select onValueChange={handleRegionChange} value={formData.region}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your region" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {regions.map(region => (
+                        <SelectItem key={region.id} value={region.id.toString()}>
+                          {region.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <Select onValueChange={handleCityChange} value={formData.city} disabled={!formData.region}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={formData.region ? "Select your city" : "Select a region first"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filteredCities.map(city => (
+                        <SelectItem key={city.id} value={city.id.toString()}>
+                          {city.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <Button type="submit" className="w-full">Save Changes</Button>
             </div>
-          </div>
+          </form>
         </div>
       </main>
       <Footer />

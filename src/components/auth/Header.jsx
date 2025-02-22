@@ -14,57 +14,61 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
 import supabase from "../../../createClient";
 
 const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [firstName, setFirstName] = useState(
-    localStorage.getItem("firstName") || "Guest"
-  ); // ✅ Get first name from localStorage
-  const [loading, setLoading] = useState(true); // ✅ FIXED: Added missing state
+  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "Guest");
+  const [userLevel, setUserLevel] = useState(localStorage.getItem("userLevel") || null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
 
-      // ✅ Check localStorage first
       const storedUser = localStorage.getItem("user");
       const storedFirstName = localStorage.getItem("firstName");
+      const storedUserLevel = localStorage.getItem("userLevel");
 
-      if (storedUser && storedFirstName) {
+      if (storedUser && storedFirstName && storedUserLevel) {
         setUser(JSON.parse(storedUser));
         setFirstName(storedFirstName);
+        setUserLevel(parseInt(storedUserLevel)); // Ensure it's an integer
         setLoading(false);
         return;
       }
 
-      // ✅ Fetch user from Supabase if not in localStorage
       const { data: authData, error: authError } = await supabase.auth.getUser();
 
       if (authError || !authData.user) {
         setUser(null);
         setFirstName("");
+        setUserLevel(null);
         localStorage.removeItem("user");
         localStorage.removeItem("firstName");
+        localStorage.removeItem("userLevel");
         setLoading(false);
         return;
       }
 
+      const userId = authData.user.id;
       setUser(authData.user);
       localStorage.setItem("user", JSON.stringify(authData.user));
 
-      // ✅ Fetch first name from "users" table
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("fname")
-        .eq("id", authData.user.id)
+        .select("fname, level")
+        .eq("id", userId)
         .single();
 
       if (!userError && userData) {
         setFirstName(userData.fname);
+        setUserLevel(userData.level);
         localStorage.setItem("firstName", userData.fname);
+        localStorage.setItem("userLevel", userData.level.toString());
       }
 
       setLoading(false);
@@ -73,14 +77,15 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
     fetchUser();
   }, []);
 
-  // ✅ Logout function
   const handleLogout = async () => {
     await supabase.auth.signOut();
     localStorage.removeItem("user");
     localStorage.removeItem("firstName");
+    localStorage.removeItem("userLevel");
     setUser(null);
     setFirstName("");
-    navigate("/login"); // ✅ Redirect to login page after signing out
+    setUserLevel(null);
+    navigate("/login");
   };
 
   return (
@@ -88,28 +93,20 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex-shrink-0">
-          <span className="text-xl font-semibold text-purple-600">
-            Volunect
-          </span>
+          <span className="text-xl font-semibold text-purple-600">Volunect</span>
         </div>
 
         {/* Main Navigation */}
         <NavigationMenu className="hidden lg:flex flex-1 justify-center">
           <NavigationMenuList className="flex items-center gap-2">
             <NavigationMenuItem>
-              <Button variant="ghost" onClick={() => navigate("/")}>
-                Home
-              </Button>
+              <Button variant="ghost" onClick={() => navigate("/")}>Home</Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Button variant="ghost" onClick={() => navigate("/about")}>
-                About Us
-              </Button>
+              <Button variant="ghost" onClick={() => navigate("/about")}>About Us</Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Button variant="ghost" onClick={() => navigate("/services")}>
-                Services
-              </Button>
+              <Button variant="ghost" onClick={() => navigate("/services")}>Services</Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <AnnouncementsDropdown />
@@ -125,35 +122,55 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
             <Search className="absolute right-2 h-4 w-4 text-gray-500" />
           </div>
 
-          {/* ✅ Instantly show name from localStorage (No More Flickering!) */}
+          {/* User Auth Section */}
           {user ? (
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-purple-600 font-medium">
-                Welcome, {firstName}!
-              </span>
-              <Button
-                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-sm"
-                onClick={handleLogout}
-              >
-                Sign Out
-              </Button>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
+                    alt="Profile"
+                    className="rounded-full w-10 h-10"
+                  />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuItem className="flex items-center gap-3">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
+                    alt="Profile"
+                    className="w-10 h-10 rounded-full"
+                  />
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">{firstName || user.email}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+
+                {userLevel === 2 ? (
+                  <DropdownMenuItem onClick={() => navigate("/applications/status")}>
+                    Application Status
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => navigate("/profile")}>
+                    Profile
+                  </DropdownMenuItem>
+                )}
+
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <div className="hidden md:flex items-center gap-2">
-              {/* Sign In & Register (only if user is NOT logged in) */}
-              <Button
-                variant="ghost"
-                className="text-purple-600"
-                onClick={() => navigate("/login")}
-              >
-                Sign In
-              </Button>
-              <Button
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-                onClick={() => navigate("/register")}
-              >
-                Register
-              </Button>
+              <Button variant="ghost" className="text-purple-600" onClick={() => navigate("/login")}>Sign In</Button>
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate("/register")}>Register</Button>
             </div>
           )}
 
@@ -165,12 +182,8 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => onLanguageChange("en")}>
-                English
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onLanguageChange("ar")}>
-                العربية
-              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onLanguageChange("en")}>English</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onLanguageChange("ar")}>العربية</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 

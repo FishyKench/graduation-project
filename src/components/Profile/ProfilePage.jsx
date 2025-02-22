@@ -1,38 +1,64 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
+import supabase from "../../../createClient";
 
 const ProfilePage = () => {
-  // Sample static profile data - replace with your data management solution
-  const sampleProfile = {
-    id: "123",
-    email: "john.doe@example.com",
-    type: "personal", // or "organization"
-    first_name: "John",
-    middle_name: "William",
-    last_name: "Doe",
-    username: "johndoe",
-    phone: "+1234567890",
-    city: "New York",
-    region: "NY",
-    degree: "Bachelor of Science",
-    interests: "Technology, Programming, AI",
-    cv_link: "#",
-  };
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const sampleOrgProfile = {
-    id: "456",
-    email: "contact@company.com",
-    type: "organization",
-    name: "Tech Company Inc.",
-    phone: "+1234567890",
-    location: "Downtown",
-    region: "CA",
-    city: "San Francisco",
-  };
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      const { data: authData, error: authError } = await supabase.auth.getUser();
 
-  // Use either profile based on type
-  const profile = sampleProfile;
+      if (authError || !authData.user) {
+        console.error("❌ Auth Error:", authError?.message);
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
+      const userId = authData.user.id;
+
+      // ✅ Fetch user details along with region & city names
+      const { data: userData, error: userError } = await supabase
+        .from("users")
+        .select(`
+          id,
+          fname,
+          lname,
+          phone_number,
+          email,
+          age,
+          degree,
+          interest,
+          cv,
+          level,
+          region:regions(name),
+          city:cities(name)
+        `)
+        .eq("id", userId)
+        .single();
+
+      console.log("📌 Full User Data:", userData); // ✅ Debugging line
+
+      if (userError) {
+        console.error("❌ Error fetching user profile:", userError.message);
+        setProfile(null);
+      } else {
+        setProfile(userData);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProfile();
+  }, []);
+
+  if (loading) return <p className="text-center py-10">Loading profile...</p>;
+
+  if (!profile) return <p className="text-center py-10">User not found.</p>;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -47,89 +73,79 @@ const ProfilePage = () => {
             />
             <div>
               <h1 className="text-2xl font-semibold">
-                {profile.type === "organization" 
-                  ? profile.name 
-                  : `${profile.first_name} ${profile.last_name}`}
+                {profile.level === 2 // ✅ Check if it's an organization
+                  ? profile.fname
+                  : `${profile.fname} ${profile.lname || ""}`}
               </h1>
               <p className="text-gray-500">{profile.email}</p>
             </div>
           </div>
 
           <div className="space-y-6">
-            {profile.type === "organization" ? (
+            {profile.level === 2 ? (
               <>
-                <div>
-                  <h2 className="text-lg font-medium mb-2">
-                    Organization Details
-                  </h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm text-gray-500">Name</label>
-                      <p>{profile.name}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Phone</label>
-                      <p>{profile.phone}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Location</label>
-                      <p>{profile.location}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Region</label>
-                      <p>{profile.region}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">City</label>
-                      <p>{profile.city}</p>
-                    </div>
+                <h2 className="text-lg font-medium mb-2">Organization Details</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-gray-500">Name</label>
+                    <p>{profile.fname}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Phone</label>
+                    <p>{profile.phone_number}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Location</label>
+                    <p>{profile.location}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Region</label>
+                    <p>{profile.region?.name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">City</label>
+                    <p>{profile.city?.name}</p>
                   </div>
                 </div>
               </>
             ) : (
               <>
-                <div>
-                  <h2 className="text-lg font-medium mb-2">Personal Details</h2>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm text-gray-500">Username</label>
-                      <p>{profile.username}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Full Name</label>
-                      <p>
-                        {profile.first_name} {profile.middle_name} {profile.last_name}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Phone</label>
-                      <p>{profile.phone}</p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Location</label>
-                      <p>
-                        {profile.city}, {profile.region}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="text-sm text-gray-500">Degree</label>
-                      <p>{profile.degree}</p>
-                    </div>
+                <h2 className="text-lg font-medium mb-2">Personal Details</h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm text-gray-500">Full Name</label>
+                    <p>{profile.fname} {profile.lname || ""}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Phone</label>
+                    <p>{profile.phone_number}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Age</label>
+                    <p>{profile.age !== null && profile.age !== undefined ? profile.age : "N/A"}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Location</label>
+                    <p>{profile.city?.name}, {profile.region?.name}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm text-gray-500">Degree</label>
+                    <p>{profile.degree && profile.degree.trim() !== "" ? profile.degree : "N/A"}</p>
                   </div>
                 </div>
 
-                {profile.interests && (
+                {profile.interest && profile.interest.trim() !== "" && (
                   <div>
                     <h2 className="text-lg font-medium mb-2">Interests</h2>
-                    <p className="text-gray-700">{profile.interests}</p>
+                    <p className="text-gray-700">{profile.interest}</p>
                   </div>
                 )}
 
-                {profile.cv_link && (
+                {profile.cv && (
                   <div>
                     <h2 className="text-lg font-medium mb-2">CV</h2>
                     <a
-                      href={profile.cv_link}
+                      href={profile.cv}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-purple-600 hover:text-purple-700"

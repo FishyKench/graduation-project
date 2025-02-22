@@ -9,6 +9,8 @@ import PrivacyPolicy from "./components/legal/PrivacyPolicy";
 import TermsOfService from "./components/legal/TermsOfService";
 import ContactPage from "./components/contact/ContactPage";
 import ServicesPage from "./components/services/ServicesPage";
+import ProfilePage from "./components/Profile/ProfilePage"; 
+import SettingsPage from "./components/settings/SettingsPage"; 
 
 function App() {
   return (
@@ -18,13 +20,15 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Home />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/home" element={<Home />} /> {/* ✅ Added this line */}
+          <Route path="/home" element={<Home />} />
           <Route path="/announcements" element={<AnnouncementsPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/profile" element={<ProfilePage />} /> {/* ✅ Add this */}
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
     </Suspense>
