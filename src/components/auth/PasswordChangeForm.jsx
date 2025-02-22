@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { supabase } from "../../lib/supabase";
 
 const PasswordChangeForm = () => {
   const [passwords, setPasswords] = useState({
@@ -33,20 +32,12 @@ const PasswordChangeForm = () => {
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: passwords.new,
-      });
-
-      if (error) throw error;
-
-      setSuccess("Password updated successfully");
+    // Mock success response
+    setTimeout(() => {
+      setSuccess("Password updated successfully (Mock)");
       setPasswords({ current: "", new: "", confirm: "" });
-    } catch (err) {
-      setError(err.message);
-    } finally {
       setLoading(false);
-    }
+    }, 1000);
   };
 
   return (
