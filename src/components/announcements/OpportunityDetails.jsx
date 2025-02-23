@@ -4,7 +4,7 @@ import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { Calendar, MapPin, GraduationCap, Building2 } from "lucide-react";
-import supabase from "../../../createClient"; // Ensure correct import
+import supabase from "../../../createClient";
 
 const OpportunityDetails = () => {
   const { id } = useParams();
@@ -20,9 +20,12 @@ const OpportunityDetails = () => {
 
       const { data, error } = await supabase
         .from("announcements")
-        .select("*")
+        .select(`
+          id, title, type, location, degree, deadline, image_url, description,
+          users:organization_id (fname) 
+        `)
         .eq("id", id)
-        .single(); // Fetch specific opportunity by ID
+        .single();
 
       if (error) {
         console.error("❌ Error fetching opportunity:", error.message);
@@ -43,15 +46,8 @@ const OpportunityDetails = () => {
 
       setUser(authData.user);
 
-      // ✅ Try loading the cached application status from local storage
-      const cachedApplications = JSON.parse(localStorage.getItem("applied_announcements") || "{}");
+      if (!opportunity) return;
 
-      if (cachedApplications[id]) {
-        setAlreadyApplied(true);
-        return; // Stop further fetch, we already know user applied
-      }
-
-      // ✅ If not in local storage, fetch from Supabase
       const { data, error } = await supabase
         .from("applications")
         .select("id")
@@ -61,13 +57,10 @@ const OpportunityDetails = () => {
 
       if (!error && data) {
         setAlreadyApplied(true);
-        localStorage.setItem("applied_announcements", JSON.stringify({ ...cachedApplications, [id]: true }));
       } else {
         setAlreadyApplied(false);
       }
     };
-
-
 
     if (opportunity) {
       fetchUserAndCheckApplication();
@@ -75,19 +68,13 @@ const OpportunityDetails = () => {
   }, [opportunity, id]);
 
   const handleApply = async () => {
-    if (!user || !opportunity || alreadyApplied) return;
-
-    setAlreadyApplied(true); // ✅ Instantly block further clicks
-
-    // ✅ Update Local Storage Immediately
-    const cachedApplications = JSON.parse(localStorage.getItem("applied_announcements") || "{}");
-    localStorage.setItem("applied_announcements", JSON.stringify({ ...cachedApplications, [id]: true }));
+    if (!user || !opportunity) return;
 
     const { error } = await supabase.from("applications").insert([
       {
         user_id: user.id,
         organization_id: opportunity.organization_id,
-        announcement_id: id,
+        announcement_id: opportunity.id,
         status: "pending",
         created_at: new Date().toISOString(),
       },
@@ -95,15 +82,10 @@ const OpportunityDetails = () => {
 
     if (error) {
       console.error("❌ Error submitting application:", error.message);
-      setAlreadyApplied(false); // ✅ Re-enable if it fails
     } else {
-      navigate("/application-success"); // Redirect to success page
+      navigate("/application-success");
     }
   };
-
-
-
-
 
   if (loading) {
     return (
@@ -148,7 +130,7 @@ const OpportunityDetails = () => {
                 <div className="flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-gray-500" />
                   <span className="text-sm text-gray-600">
-                    {opportunity.organization}
+                    {opportunity.users?.fname || "Unknown Organization"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -174,7 +156,9 @@ const OpportunityDetails = () => {
               {/* Description */}
               <div>
                 <h2 className="text-xl font-semibold mb-3">Description</h2>
-                <p className="text-gray-600">{opportunity.description || "No description available."}</p>
+                <p className="text-gray-600">
+                  {opportunity.description || "No description available."}
+                </p>
               </div>
 
               {/* Apply Button */}
@@ -182,10 +166,11 @@ const OpportunityDetails = () => {
                 <Button
                   onClick={handleApply}
                   disabled={alreadyApplied}
-                  className={`px-8 py-3 text-lg ${alreadyApplied
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-purple-600 hover:bg-purple-700 text-white"
-                    }`}
+                  className={`px-8 py-3 text-lg ${
+                    alreadyApplied
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-purple-600 hover:bg-purple-700 text-white"
+                  }`}
                 >
                   {alreadyApplied ? "Already Applied" : "Apply Now"}
                 </Button>

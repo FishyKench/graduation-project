@@ -4,10 +4,14 @@ import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
 import { Button } from "../ui/button";
+import { PlusCircle } from "lucide-react";
+import { Dialog, DialogContent } from "../ui/dialog";
+import NewApplicationForm from "./NewApplicationForm";
 
 const ApplicationsManagement = () => {
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
+  const [showNewApplication, setShowNewApplication] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -64,7 +68,6 @@ const ApplicationsManagement = () => {
       setLoading(false);
     };
 
-
     fetchApplications();
   }, []);
 
@@ -101,7 +104,19 @@ const ApplicationsManagement = () => {
       <Header />
       <main className="flex-1 py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-semibold mb-4">Manage Applications</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-semibold">Manage Applications</h1>
+            <Button className="flex items-center gap-2" onClick={() => setShowNewApplication(true)}>
+              <PlusCircle className="w-4 h-4" />
+              New Application
+            </Button>
+          </div>
+
+          <Dialog open={showNewApplication} onOpenChange={setShowNewApplication}>
+            <DialogContent className="max-w-4xl">
+              <NewApplicationForm onClose={() => setShowNewApplication(false)} />
+            </DialogContent>
+          </Dialog>
 
           {loading ? (
             <p className="text-center py-4">Loading...</p>
@@ -133,7 +148,6 @@ const ApplicationsManagement = () => {
                   <p className="text-sm text-gray-600">
                     Location: {app.users?.cities?.regions?.name}, {app.users?.cities?.name}
                   </p>
-
 
                   {app.users?.cv && (
                     <a
