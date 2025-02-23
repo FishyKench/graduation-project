@@ -14,8 +14,8 @@ import ApplicationStatus from "./components/applications/ApplicationStatus";
 import ApplicationsManagement from "./components/applications/ApplicationsManagement";
 import ApplicationTracker from "./components/applications/ApplicationTracker";
 import OpportunityDetails from "./components/announcements/OpportunityDetails";
-import Settings from "./components/settings/SettingsPage";
 import SettingsPage from "./components/settings/SettingsPage";
+import ApplicationSuccess from "./components/applications/ApplicationSuccess";
 
 function App() {
   return (
@@ -34,6 +34,8 @@ function App() {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/application-success" element={<ApplicationSuccess />} />
+
 
           {/* ✅ Application Status Route */}
           <Route path="/applications/status" element={<ApplicationStatus />} />

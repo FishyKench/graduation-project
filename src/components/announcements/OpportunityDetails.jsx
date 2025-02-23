@@ -11,6 +11,8 @@ const OpportunityDetails = () => {
   const navigate = useNavigate();
   const [opportunity, setOpportunity] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchOpportunity = async () => {
@@ -27,15 +29,60 @@ const OpportunityDetails = () => {
       } else {
         setOpportunity(data);
       }
-      
+
       setLoading(false);
     };
 
     fetchOpportunity();
   }, [id]);
 
-  const handleApply = () => {
-    navigate(`/applications/new?opportunity=${id}`);
+  useEffect(() => {
+    const fetchUserAndCheckApplication = async () => {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user) return;
+
+      setUser(authData.user);
+
+      if (!opportunity) return;
+
+      // ✅ Check if the user has already applied to THIS specific announcement
+      const { data, error } = await supabase
+        .from("applications")
+        .select("id")
+        .eq("user_id", authData.user.id) // Check for THIS user
+        .eq("id", id) // ✅ Check for THIS specific announcement ID, NOT organization_id
+        .single();
+
+      if (!error && data) {
+        setAlreadyApplied(true);
+      } else {
+        setAlreadyApplied(false);
+      }
+    };
+
+    if (opportunity) {
+      fetchUserAndCheckApplication();
+    }
+  }, [opportunity, id]);
+
+  const handleApply = async () => {
+    if (!user || !opportunity) return;
+
+    const { error } = await supabase.from("applications").insert([
+      {
+        user_id: user.id,
+        organization_id: opportunity.organization_id,
+        id: id, // ✅ Correctly insert the announcement ID
+        status: "pending",
+        created_at: new Date().toISOString(),
+      },
+    ]);
+
+    if (error) {
+      console.error("❌ Error submitting application:", error.message);
+    } else {
+      navigate("/application-success"); // Redirect to success page
+    }
   };
 
   if (loading) {
@@ -114,9 +161,14 @@ const OpportunityDetails = () => {
               <div className="flex justify-center pt-4">
                 <Button
                   onClick={handleApply}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 text-lg"
+                  disabled={alreadyApplied}
+                  className={`px-8 py-3 text-lg ${
+                    alreadyApplied
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-purple-600 hover:bg-purple-700 text-white"
+                  }`}
                 >
-                  Apply Now
+                  {alreadyApplied ? "Already Applied" : "Apply Now"}
                 </Button>
               </div>
             </div>
