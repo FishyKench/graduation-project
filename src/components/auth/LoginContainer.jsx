@@ -18,8 +18,6 @@ const LoginContainer = ({
 
       <LoginForm onSubmit={onLogin} />
 
-      <SocialLogin onGoogleLogin={onGoogleLogin} onAppleLogin={onAppleLogin} />
-
       <div className="text-center text-sm text-gray-500">
         <span>Don't have an account? </span>
         <a

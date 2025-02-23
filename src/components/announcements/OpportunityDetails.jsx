@@ -22,6 +22,7 @@ const OpportunityDetails = () => {
         .from("announcements")
         .select(`
           id, title, type, location, degree, deadline, image_url, description,
+          organization_id, 
           users:organization_id (fname) 
         `)
         .eq("id", id)
@@ -30,6 +31,7 @@ const OpportunityDetails = () => {
       if (error) {
         console.error("❌ Error fetching opportunity:", error.message);
       } else {
+        console.log("✅ Fetched opportunity:", data); // Debugging log
         setOpportunity(data);
       }
 
@@ -70,10 +72,16 @@ const OpportunityDetails = () => {
   const handleApply = async () => {
     if (!user || !opportunity) return;
 
+    console.log("🔎 Debugging Application Submission:", {
+      user_id: user.id,
+      organization_id: opportunity.organization_id, // Ensuring this exists
+      announcement_id: opportunity.id,
+    });
+
     const { error } = await supabase.from("applications").insert([
       {
         user_id: user.id,
-        organization_id: opportunity.organization_id,
+        organization_id: opportunity.organization_id, // ✅ Should now correctly store the organization_id
         announcement_id: opportunity.id,
         status: "pending",
         created_at: new Date().toISOString(),

@@ -16,12 +16,11 @@ const AnnouncementsDropdown = () => {
   const [selectedDegree, setSelectedDegree] = useState("all");
   const [announcements, setAnnouncements] = useState([]);
 
-  // ✅ Fetch announcements from Supabase
   useEffect(() => {
     const fetchAnnouncements = async () => {
       const { data, error } = await supabase
         .from("announcements")
-        .select("id, title, organization, degree, image_url")
+        .select("id, title, degree, image_url, users!announcements_organization_id_fkey(fname)")
         .limit(9);
 
       if (!error) {
@@ -32,14 +31,12 @@ const AnnouncementsDropdown = () => {
     fetchAnnouncements();
   }, []);
 
-  // ✅ Filtering logic
   let filteredAnnouncements = announcements.filter(
     (a) =>
       selectedDegree === "all" ||
       a.degree.trim().toLowerCase() === selectedDegree.trim().toLowerCase()
   );
 
-  // ✅ Shuffle & limit to 3 when "All Programs" is selected
   if (selectedDegree === "all" && filteredAnnouncements.length > 3) {
     filteredAnnouncements = filteredAnnouncements
       .sort(() => 0.5 - Math.random())
@@ -62,8 +59,6 @@ const AnnouncementsDropdown = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[350px] p-2">
-        
-        {/* Degree Filters */}
         <div className="mb-2 p-2 bg-gray-50 rounded-md">
           <div className="text-sm font-medium text-gray-500 mb-2">
             Filter by Program:
@@ -88,14 +83,13 @@ const AnnouncementsDropdown = () => {
 
         <DropdownMenuSeparator />
 
-        {/* Announcements List */}
         <div className="max-h-[400px] overflow-y-auto">
           {filteredAnnouncements.length > 0 ? (
             filteredAnnouncements.map((announcement, index) => (
               <DropdownMenuItem
                 key={index}
                 className="flex items-start gap-3 p-2 cursor-pointer hover:bg-gray-50"
-                onClick={() => navigate(`/opportunities/${announcement.id}`)} // ✅ Navigates to OpportunityDetails page
+                onClick={() => navigate(`/opportunities/${announcement.id}`)}
               >
                 <img
                   src={announcement.image_url}
@@ -107,7 +101,7 @@ const AnnouncementsDropdown = () => {
                     {announcement.title}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {announcement.organization}
+                    {announcement.users?.fname || "Unknown Organization"}
                   </div>
                   <div className="text-xs text-purple-600 mt-1 capitalize">
                     {announcement.degree}
@@ -124,10 +118,9 @@ const AnnouncementsDropdown = () => {
 
         <DropdownMenuSeparator />
 
-        {/* View All Link */}
         <DropdownMenuItem
           className="text-center text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
-          onClick={() => navigate("/announcements")} // ✅ Uses navigate instead of window.location.href
+          onClick={() => navigate("/announcements")}
         >
           View All Announcements
         </DropdownMenuItem>

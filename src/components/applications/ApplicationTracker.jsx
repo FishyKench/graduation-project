@@ -10,21 +10,25 @@ const ApplicationTracker = () => {
     const fetchApplications = async () => {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) return;
-
+    
       const userId = authData.user.id;
-
-      // ✅ Fetch applications with the linked announcement title
+    
       const { data, error } = await supabase
         .from("applications")
         .select(`
           id, status, created_at,
-          announcements!applications_announcement_id_fkey(title),
-          users!applications_organization_id_fkey(fname)
+          announcements!applications_announcement_id_fkey ( title ),
+          users!applications_organization_id_fkey ( fname )
         `)
         .eq("user_id", userId);
-
-      if (!error) setApplications(data);
+    
+      if (!error) {
+        setApplications(data);
+      } else {
+        console.error("Error fetching applications:", error.message);
+      }
     };
+    
 
     fetchApplications();
   }, []);

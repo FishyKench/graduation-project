@@ -91,8 +91,8 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   return (
     <header className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
-        {/* Logo */}
-        <div className="flex-shrink-0">
+        {/* ✅ Clickable Volunect Logo */}
+        <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
           <span className="text-xl font-semibold text-purple-600">Volunect</span>
         </div>
 
@@ -108,9 +108,12 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
             <NavigationMenuItem>
               <Button variant="ghost" onClick={() => navigate("/services")}>Services</Button>
             </NavigationMenuItem>
-            <NavigationMenuItem>
-              <AnnouncementsDropdown />
-            </NavigationMenuItem>
+            {/* ✅ Hide Announcements if user is NOT logged in OR if they are an organization */}
+            {user && userLevel !== 2 && (
+              <NavigationMenuItem>
+                <AnnouncementsDropdown />
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
 
@@ -135,38 +138,19 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuItem className="flex items-center gap-3">
-                  <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                    alt="Profile"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">{firstName || user.email}</p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-
-                {/* ✅ Profile Button for All Users */}
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   Profile
                 </DropdownMenuItem>
-
-                {/* ✅ Volunteers See "Application Status" */}
                 {userLevel === 1 && (
                   <DropdownMenuItem onClick={() => navigate("/applications/tracker")}>
                     Application Tracker
                   </DropdownMenuItem>
                 )}
-
-                {/* ✅ Organizations See "Manage Applications" */}
                 {userLevel === 2 && (
                   <DropdownMenuItem onClick={() => navigate("/applications/manage")}>
                     Manage Applications
                   </DropdownMenuItem>
                 )}
-
                 <DropdownMenuItem onClick={() => navigate("/settings")}>
                   Settings
                 </DropdownMenuItem>
@@ -182,24 +166,6 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
               <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate("/register")}>Register</Button>
             </div>
           )}
-
-          {/* Language Selector */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Globe className="h-5 w-5" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => onLanguageChange("en")}>English</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onLanguageChange("ar")}>العربية</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {/* Mobile Menu */}
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Menu className="h-5 w-5" />
-          </Button>
         </div>
       </div>
     </header>

@@ -1,10 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Facebook, Twitter, Instagram } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import supabase from "../../../createClient";
 
 const Footer = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: authData } = await supabase.auth.getUser();
+      setUser(authData?.user || null);
+    };
+
+    fetchUser();
+  }, []);
 
   const socialLinks = {
     facebook: "https://facebook.com",
@@ -21,16 +32,19 @@ const Footer = () => {
   return (
     <footer className="w-full bg-white border-t border-gray-200 py-8 px-4">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-        {/* Volunteer CTA */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="link"
-            className="text-purple-600 hover:text-purple-700 flex items-center gap-2"
-            onClick={() => navigate("/register")}
-          >
-            Become a Volunteer Today
-          </Button>
-        </div>
+        
+        {/* Volunteer CTA - Hidden if User is Logged In */}
+        {!user && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="link"
+              className="text-purple-600 hover:text-purple-700 flex items-center gap-2"
+              onClick={() => navigate("/register")}
+            >
+              Become a Volunteer Today
+            </Button>
+          </div>
+        )}
 
         {/* Social Media Links */}
         <div className="flex items-center gap-4">
