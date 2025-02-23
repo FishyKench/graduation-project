@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { Search, Briefcase, Users, GraduationCap, School, BookOpen } from "lucide-react";
-import supabase from "../../../createClient"; // ✅ Ensure correct import
+import supabase from "../../../createClient";
 
 const AnnouncementsPage = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [selectedType, setSelectedType] = useState("all");
   const [selectedDegree, setSelectedDegree] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const navigate = useNavigate(); // ✅ Use navigate for routing
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -32,9 +35,9 @@ const AnnouncementsPage = () => {
 
   const degreeFilters = [
     { id: "all", label: "All Programs", icon: GraduationCap },
-    { id: "High School", label: "High School", icon: School },  // ✅ Fixed case
-    { id: "Undergraduate", label: "Undergraduate", icon: BookOpen },  // ✅ Fixed case
-    { id: "CO-OP", label: "CO-OP", icon: GraduationCap }  // ✅ Fixed case
+    { id: "High School", label: "High School", icon: School },
+    { id: "Undergraduate", label: "Undergraduate", icon: BookOpen },
+    { id: "CO-OP", label: "CO-OP", icon: GraduationCap }
   ];
 
   const filteredAnnouncements = announcements.filter((announcement) => {
@@ -70,7 +73,7 @@ const AnnouncementsPage = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
         </div>
 
-        {/* 🔥 Type Filters - Internships & Volunteer */}
+        {/* 🔥 Type Filters */}
         <div className="mb-4">
           <h2 className="text-sm font-medium text-gray-700 mb-2">Filter by Type</h2>
           <div className="flex gap-2 flex-wrap">
@@ -78,7 +81,8 @@ const AnnouncementsPage = () => {
               <Button
                 key={filter.id}
                 variant="outline"
-                className={`flex items-center gap-2 ${selectedType === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""}`}
+                className={`flex items-center gap-2 ${selectedType === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
+                  }`}
                 onClick={() => setSelectedType(filter.id)}
               >
                 <filter.icon className="h-4 w-4" />
@@ -88,7 +92,7 @@ const AnnouncementsPage = () => {
           </div>
         </div>
 
-        {/* 🎓 Degree Filters - High School, Undergraduate, CO-OP */}
+        {/* 🎓 Degree Filters */}
         <div className="mb-8">
           <h2 className="text-sm font-medium text-gray-700 mb-2">Filter by Degree</h2>
           <div className="flex gap-2 flex-wrap">
@@ -96,7 +100,8 @@ const AnnouncementsPage = () => {
               <Button
                 key={filter.id}
                 variant="outline"
-                className={`flex items-center gap-2 ${selectedDegree === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""}`}
+                className={`flex items-center gap-2 ${selectedDegree === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
+                  }`}
                 onClick={() => setSelectedDegree(filter.id)}
               >
                 <filter.icon className="h-4 w-4" />
@@ -115,9 +120,8 @@ const AnnouncementsPage = () => {
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        announcement.type === "internship" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
-                      }`}
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${announcement.type === "internship" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
+                        }`}
                     >
                       {announcement.type === "internship" ? "Internship" : "Volunteer"}
                     </span>
@@ -129,7 +133,9 @@ const AnnouncementsPage = () => {
                     <span className="text-xs text-gray-500">
                       Deadline: {new Date(announcement.deadline).toLocaleDateString()}
                     </span>
-                    <Button variant="outline" size="sm">Learn More</Button>
+                    <Button variant="outline" size="sm" onClick={() => navigate(`/opportunities/${announcement.id}`)}>
+                      Learn More
+                    </Button>
                   </div>
                 </div>
               </div>

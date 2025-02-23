@@ -13,6 +13,9 @@ import ProfilePage from "./components/Profile/ProfilePage";
 import ApplicationStatus from "./components/applications/ApplicationStatus";
 import ApplicationsManagement from "./components/applications/ApplicationsManagement";
 import ApplicationTracker from "./components/applications/ApplicationTracker";
+import OpportunityDetails from "./components/announcements/OpportunityDetails";
+import Settings from "./components/settings/SettingsPage";
+import SettingsPage from "./components/settings/SettingsPage";
 
 function App() {
   return (
@@ -30,11 +33,13 @@ function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
 
           {/* ✅ Application Status Route */}
           <Route path="/applications/status" element={<ApplicationStatus />} />
           <Route path="/applications/manage" element={<ApplicationsManagement />} /> 
           <Route path="/applications/tracker" element={<ApplicationTracker />} />
+          <Route path="/opportunities/:id" element={<OpportunityDetails />} />
         </Routes>
       </div>
     </Suspense>

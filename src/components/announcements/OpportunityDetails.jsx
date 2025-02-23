@@ -1,43 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { Calendar, MapPin, GraduationCap, Building2 } from "lucide-react";
+import supabase from "../../../createClient"; // Ensure correct import
 
 const OpportunityDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [opportunity, setOpportunity] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const opportunity = {
-    id: 1,
-    type: "internship",
-    title: "Summer Internship Program",
-    organization: "Tech Corp",
-    degree: "undergraduate",
-    location: "Riyadh",
-    deadline: "2024-06-01",
-    description:
-      "Join our dynamic team for a summer of learning and growth. This internship program offers hands-on experience in software development and project management.",
-    requirements: [
-      "Currently pursuing an undergraduate degree in Computer Science or related field",
-      "Strong programming fundamentals",
-      "Excellent communication skills",
-      "Ability to work in a team environment",
-    ],
-    benefits: [
-      "Competitive stipend",
-      "Flexible working hours",
-      "Mentorship program",
-      "Potential for full-time employment",
-    ],
-    image:
-      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=60",
-  };
+  useEffect(() => {
+    const fetchOpportunity = async () => {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from("announcements")
+        .select("*")
+        .eq("id", id)
+        .single(); // Fetch specific opportunity by ID
+
+      if (error) {
+        console.error("❌ Error fetching opportunity:", error.message);
+      } else {
+        setOpportunity(data);
+      }
+      
+      setLoading(false);
+    };
+
+    fetchOpportunity();
+  }, [id]);
 
   const handleApply = () => {
     navigate(`/applications/new?opportunity=${id}`);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading opportunity details...</p>
+      </div>
+    );
+  }
+
+  if (!opportunity) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Opportunity not found.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -48,7 +63,7 @@ const OpportunityDetails = () => {
             {/* Hero Image */}
             <div className="relative h-64 w-full">
               <img
-                src={opportunity.image}
+                src={opportunity.image_url}
                 alt={opportunity.title}
                 className="w-full h-full object-cover"
               />
@@ -92,31 +107,7 @@ const OpportunityDetails = () => {
               {/* Description */}
               <div>
                 <h2 className="text-xl font-semibold mb-3">Description</h2>
-                <p className="text-gray-600">{opportunity.description}</p>
-              </div>
-
-              {/* Requirements */}
-              <div>
-                <h2 className="text-xl font-semibold mb-3">Requirements</h2>
-                <ul className="list-disc pl-5 space-y-2">
-                  {opportunity.requirements.map((req, index) => (
-                    <li key={index} className="text-gray-600">
-                      {req}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Benefits */}
-              <div>
-                <h2 className="text-xl font-semibold mb-3">Benefits</h2>
-                <ul className="list-disc pl-5 space-y-2">
-                  {opportunity.benefits.map((benefit, index) => (
-                    <li key={index} className="text-gray-600">
-                      {benefit}
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-gray-600">{opportunity.description || "No description available."}</p>
               </div>
 
               {/* Apply Button */}

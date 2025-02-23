@@ -8,23 +8,23 @@ import {
 } from "../ui/dropdown-menu";
 import { Button } from "../ui/button";
 import { Megaphone, GraduationCap, School, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import supabase from "../../../createClient";
 
 const AnnouncementsDropdown = () => {
+  const navigate = useNavigate();
   const [selectedDegree, setSelectedDegree] = useState("all");
   const [announcements, setAnnouncements] = useState([]);
 
   // ✅ Fetch announcements from Supabase
   useEffect(() => {
     const fetchAnnouncements = async () => {
-      const { data, error } = await supabase.from("announcements")
+      const { data, error } = await supabase
+        .from("announcements")
         .select("id, title, organization, degree, image_url")
-        .limit(9); // Get 9 max (3 per category)
+        .limit(9);
 
-      if (error) {
-        console.error("❌ Error fetching announcements:", error.message);
-      } else {
-        console.log("✅ All Fetched Announcements:", data);
+      if (!error) {
         setAnnouncements(data);
       }
     };
@@ -32,22 +32,23 @@ const AnnouncementsDropdown = () => {
     fetchAnnouncements();
   }, []);
 
-  // ✅ Handle filtering logic
+  // ✅ Filtering logic
   let filteredAnnouncements = announcements.filter(
-    (a) => selectedDegree === "all" || a.degree.trim().toLowerCase() === selectedDegree.trim().toLowerCase()
+    (a) =>
+      selectedDegree === "all" ||
+      a.degree.trim().toLowerCase() === selectedDegree.trim().toLowerCase()
   );
 
-  // ✅ When "All Programs" is selected, shuffle & pick 3 random ones
+  // ✅ Shuffle & limit to 3 when "All Programs" is selected
   if (selectedDegree === "all" && filteredAnnouncements.length > 3) {
-    filteredAnnouncements = filteredAnnouncements.sort(() => 0.5 - Math.random()).slice(0, 3);
+    filteredAnnouncements = filteredAnnouncements
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 3);
   }
-
-  console.log("🔵 Selected Degree:", selectedDegree);
-  console.log("🔍 Filtered Announcements:", filteredAnnouncements);
 
   const degreeFilters = [
     { id: "all", label: "All Programs", icon: GraduationCap },
-    { id: "High School", label: "High School", icon: School }, // ✅ Ensure exact match
+    { id: "High School", label: "High School", icon: School },
     { id: "Undergraduate", label: "Undergraduate", icon: BookOpen },
     { id: "CO-OP", label: "CO-OP", icon: GraduationCap },
   ];
@@ -94,6 +95,7 @@ const AnnouncementsDropdown = () => {
               <DropdownMenuItem
                 key={index}
                 className="flex items-start gap-3 p-2 cursor-pointer hover:bg-gray-50"
+                onClick={() => navigate(`/opportunities/${announcement.id}`)} // ✅ Navigates to OpportunityDetails page
               >
                 <img
                   src={announcement.image_url}
@@ -125,7 +127,7 @@ const AnnouncementsDropdown = () => {
         {/* View All Link */}
         <DropdownMenuItem
           className="text-center text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
-          onClick={() => (window.location.href = "/announcements")}
+          onClick={() => navigate("/announcements")} // ✅ Uses navigate instead of window.location.href
         >
           View All Announcements
         </DropdownMenuItem>
