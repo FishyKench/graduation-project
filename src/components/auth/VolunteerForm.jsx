@@ -8,9 +8,9 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
     email: "",
     password: "",
     firstName: "",
-    middleName: "", // ✅ STILL HERE
+    middleName: "", // ✅ BACK AGAIN!
     lastName: "",
-    age: "", // ✅ STILL HERE
+    age: "", // ✅ MOVED TO THE RIGHT SPOT
     phone: "",
     region: "",
     city: "",
@@ -39,7 +39,6 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitting form data:", formData); // ✅ Debug log
     onSubmit(formData);
   };
 
@@ -54,7 +53,6 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-      {/* ✅ Names & Age */}
       <div className="grid grid-cols-3 gap-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
@@ -83,7 +81,6 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
         <Input type="number" name="age" value={formData.age} onChange={handleChange} min="15" max="65" required />
       </div>
 
-      {/* ✅ Email & Password */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
           Email <span className="text-red-500">*</span>
@@ -98,56 +95,59 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
         <Input type="password" name="password" value={formData.password} onChange={handleChange} required minLength={8} />
       </div>
 
-      {/* ✅ Phone Number */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Phone Number</label>
         <Input type="tel" name="phone" value={formData.phone} onChange={handleChange} required />
       </div>
 
-      {/* ✅ Region & City */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Region <span className="text-red-500">*</span>
-          </label>
-          <select
-            name="region"
-            value={formData.region}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-          >
-            <option value="">Select a region</option>
-            {loading ? <option>Loading...</option> : regions.map((region) => (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          Region <span className="text-red-500">*</span>
+        </label>
+        <select
+          name="region"
+          value={formData.region}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+        >
+          <option value="">Select a region</option>
+          {loading ? (
+            <option>Loading...</option>
+          ) : (
+            regions.map((region) => (
               <option key={region.id} value={region.id}>
                 {region.name}
               </option>
-            ))}
-          </select>
-        </div>
+            ))
+          )}
+        </select>
+      </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            City <span className="text-red-500">*</span>
-          </label>
-          <select
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-          >
-            <option value="">Select a city</option>
-            {loading ? <option>Loading...</option> : cities.map((city) => (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">
+          City <span className="text-red-500">*</span>
+        </label>
+        <select
+          name="city"
+          value={formData.city}
+          onChange={handleChange}
+          required
+          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+        >
+          <option value="">Select a city</option>
+          {loading ? (
+            <option>Loading...</option>
+          ) : (
+            cities.map((city) => (
               <option key={city.id} value={city.id}>
                 {city.name}
               </option>
-            ))}
-          </select>
-        </div>
+            ))
+          )}
+        </select>
       </div>
 
-      {/* ✅ Degree */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
           Degree <span className="text-red-500">*</span>
@@ -166,7 +166,6 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
         </select>
       </div>
 
-      {/* ✅ Interests */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
           Interests
@@ -176,16 +175,21 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
           value={formData.interests}
           onChange={handleChange}
           className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-[100px]"
-          placeholder="Tell us about your interests..."
+          placeholder="Tell us about your interests and what kind of volunteer work you're looking for..."
         />
       </div>
 
-      {/* ✅ CV Link */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
           CV Link
         </label>
-        <Input type="url" name="cvLink" value={formData.cvLink} onChange={handleChange} placeholder="https://example.com/your-cv" />
+        <Input
+          type="url"
+          name="cvLink"
+          value={formData.cvLink}
+          onChange={handleChange}
+          placeholder="https://example.com/your-cv"
+        />
       </div>
 
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6">

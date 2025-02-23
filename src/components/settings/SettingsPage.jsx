@@ -21,10 +21,12 @@ const SettingsPage = () => {
   const [cities, setCities] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState(null); // ✅ State for notifications
 
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true);
+      setMessage(null);
 
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) {
@@ -34,15 +36,12 @@ const SettingsPage = () => {
       }
 
       const userId = authData.user.id;
-      console.log("📌 Logged-in User ID:", userId);
 
       const { data: userData, error: userError } = await supabase
         .from("users")
         .select("fname, mname, lname, phone_number, region, city, email")
         .eq("id", userId)
         .single();
-
-      console.log("📌 User Data:", userData);
 
       if (userError) {
         console.error("❌ Error fetching user data:", userError.message);
@@ -63,18 +62,10 @@ const SettingsPage = () => {
 
     const fetchRegionsAndCities = async () => {
       const { data: regionData, error: regionError } = await supabase.from("regions").select("id, name");
-      if (regionError) {
-        console.error("❌ Error fetching regions:", regionError.message);
-      } else {
-        setRegions(regionData);
-      }
+      if (!regionError) setRegions(regionData);
 
       const { data: cityData, error: cityError } = await supabase.from("cities").select("id, name, region_id");
-      if (cityError) {
-        console.error("❌ Error fetching cities:", cityError.message);
-      } else {
-        setCities(cityData);
-      }
+      if (!cityError) setCities(cityData);
     };
 
     fetchUserData();
@@ -82,37 +73,26 @@ const SettingsPage = () => {
   }, []);
 
   const handleRegionChange = (selectedRegionId) => {
-    setFormData(prev => ({
-      ...prev,
-      region: selectedRegionId,
-      city: "",
-    }));
-
+    setFormData(prev => ({ ...prev, region: selectedRegionId, city: "" }));
     setFilteredCities(cities.filter(city => city.region_id.toString() === selectedRegionId));
   };
 
   const handleCityChange = (selectedCityId) => {
-    setFormData(prev => ({
-      ...prev,
-      city: selectedCityId,
-    }));
+    setFormData(prev => ({ ...prev, city: selectedCityId }));
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    console.log("Profile data to save:", formData);
+    setMessage(null); // ✅ Clear any previous messages
 
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData.user) {
-      console.error("❌ Auth Error:", authError?.message);
+      setMessage({ type: "error", text: "Authentication error. Please log in again." });
       return;
     }
 
@@ -131,9 +111,9 @@ const SettingsPage = () => {
       .eq("id", userId);
 
     if (error) {
-      console.error("❌ Error updating profile:", error.message);
+      setMessage({ type: "error", text: "Error updating profile. Try again later." });
     } else {
-      console.log("✅ Profile updated successfully!");
+      setMessage({ type: "success", text: "Profile updated successfully!" });
     }
   };
 
@@ -146,41 +126,42 @@ const SettingsPage = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
+          {/* ✅ Notification Message */}
+          {message && (
+            <div
+              className={`mb-4 p-3 rounded-lg text-center ${
+                message.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+              }`}
+            >
+              {message.text}
+            </div>
+          )}
+
           <form onSubmit={handleProfileSubmit} className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-lg font-medium mb-4">Profile Settings</h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <Input type="email" name="email" value={formData.email} disabled />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    First Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                   <Input name="first_name" value={formData.first_name} onChange={handleInputChange} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Middle Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Middle Name</label>
                   <Input name="middle_name" value={formData.middle_name} onChange={handleInputChange} />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Last Name
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                   <Input name="last_name" value={formData.last_name} onChange={handleInputChange} />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <Input name="phone" value={formData.phone} onChange={handleInputChange} />
               </div>
 
@@ -194,9 +175,7 @@ const SettingsPage = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {regions.map(region => (
-                        <SelectItem key={region.id} value={region.id.toString()}>
-                          {region.name}
-                        </SelectItem>
+                        <SelectItem key={region.id} value={region.id.toString()}>{region.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -210,9 +189,7 @@ const SettingsPage = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {filteredCities.map(city => (
-                        <SelectItem key={city.id} value={city.id.toString()}>
-                          {city.name}
-                        </SelectItem>
+                        <SelectItem key={city.id} value={city.id.toString()}>{city.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

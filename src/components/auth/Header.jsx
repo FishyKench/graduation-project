@@ -18,7 +18,7 @@ import {
 } from "../ui/dropdown-menu";
 import supabase from "../../../createClient";
 
-const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
+const Header = ({ onLanguageChange = () => { }, currentLanguage = "en" }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "Guest");
@@ -148,13 +148,17 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
 
-                {userLevel === 2 ? (
-                  <DropdownMenuItem onClick={() => navigate("/applications/status")}>
-                    Application Status
+                {/* ✅ Volunteers See "Application Status" */}
+                {userLevel === 1 && (
+                  <DropdownMenuItem onClick={() => navigate("/applications/tracker")}>
+                    Application Tracker
                   </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={() => navigate("/profile")}>
-                    Profile
+                )}
+
+                {/* ✅ Organizations See "Manage Applications" */}
+                {userLevel === 2 && (
+                  <DropdownMenuItem onClick={() => navigate("/applications/manage")}>
+                    Manage Applications
                   </DropdownMenuItem>
                 )}
 
