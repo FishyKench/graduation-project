@@ -35,6 +35,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/application-success" element={<ApplicationSuccess />} />
+          <Route path="/profile/:id" element={<ProfilePage />} />
 
 
           {/* ✅ Application Status Route */}

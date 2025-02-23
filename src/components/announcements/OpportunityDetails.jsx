@@ -43,22 +43,31 @@ const OpportunityDetails = () => {
 
       setUser(authData.user);
 
-      if (!opportunity) return;
+      // ✅ Try loading the cached application status from local storage
+      const cachedApplications = JSON.parse(localStorage.getItem("applied_announcements") || "{}");
 
-      // ✅ Check if the user has already applied to THIS specific announcement
+      if (cachedApplications[id]) {
+        setAlreadyApplied(true);
+        return; // Stop further fetch, we already know user applied
+      }
+
+      // ✅ If not in local storage, fetch from Supabase
       const { data, error } = await supabase
         .from("applications")
         .select("id")
-        .eq("user_id", authData.user.id) // Check for THIS user
-        .eq("id", id) // ✅ Check for THIS specific announcement ID, NOT organization_id
+        .eq("user_id", authData.user.id)
+        .eq("announcement_id", id)
         .single();
 
       if (!error && data) {
         setAlreadyApplied(true);
+        localStorage.setItem("applied_announcements", JSON.stringify({ ...cachedApplications, [id]: true }));
       } else {
         setAlreadyApplied(false);
       }
     };
+
+
 
     if (opportunity) {
       fetchUserAndCheckApplication();
@@ -66,13 +75,19 @@ const OpportunityDetails = () => {
   }, [opportunity, id]);
 
   const handleApply = async () => {
-    if (!user || !opportunity) return;
+    if (!user || !opportunity || alreadyApplied) return;
+
+    setAlreadyApplied(true); // ✅ Instantly block further clicks
+
+    // ✅ Update Local Storage Immediately
+    const cachedApplications = JSON.parse(localStorage.getItem("applied_announcements") || "{}");
+    localStorage.setItem("applied_announcements", JSON.stringify({ ...cachedApplications, [id]: true }));
 
     const { error } = await supabase.from("applications").insert([
       {
         user_id: user.id,
         organization_id: opportunity.organization_id,
-        id: id, // ✅ Correctly insert the announcement ID
+        announcement_id: id,
         status: "pending",
         created_at: new Date().toISOString(),
       },
@@ -80,10 +95,15 @@ const OpportunityDetails = () => {
 
     if (error) {
       console.error("❌ Error submitting application:", error.message);
+      setAlreadyApplied(false); // ✅ Re-enable if it fails
     } else {
       navigate("/application-success"); // Redirect to success page
     }
   };
+
+
+
+
 
   if (loading) {
     return (
@@ -162,11 +182,10 @@ const OpportunityDetails = () => {
                 <Button
                   onClick={handleApply}
                   disabled={alreadyApplied}
-                  className={`px-8 py-3 text-lg ${
-                    alreadyApplied
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-purple-600 hover:bg-purple-700 text-white"
-                  }`}
+                  className={`px-8 py-3 text-lg ${alreadyApplied
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-purple-600 hover:bg-purple-700 text-white"
+                    }`}
                 >
                   {alreadyApplied ? "Already Applied" : "Apply Now"}
                 </Button>

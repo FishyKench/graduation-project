@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
-import Header from "../auth/Header"; 
+import { useNavigate } from "react-router-dom";
+import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
 import { Button } from "../ui/button";
 
 const ApplicationsManagement = () => {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
-  
+
       // ✅ Get logged-in user
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) {
@@ -19,16 +21,16 @@ const ApplicationsManagement = () => {
         setLoading(false);
         return;
       }
-  
+
       const userId = authData.user.id;
-  
+
       // ✅ Check if user is an organization
       const { data: userData, error: userError } = await supabase
         .from("users")
         .select("id, level")
         .eq("id", userId)
         .single();
-  
+
       if (userError) {
         console.error("❌ Error fetching user details:", userError.message);
         setLoading(false);
@@ -40,31 +42,32 @@ const ApplicationsManagement = () => {
         setLoading(false);
         return;
       }
-  
-      // ✅ Fetch applications with user details (including city & region)
+
+      // ✅ Fetch applications with user details, including `gender`
       const { data, error } = await supabase
         .from("applications")
         .select(`
           id, user_id, status, created_at,
           users!applications_user_id_fkey (
-            fname, mname, lname, age, degree, cv,
+            fname, mname, lname, age, gender, degree, cv,
             cities ( name, regions ( name ) )
           )
         `)
         .eq("organization_id", userId);
-  
+
       if (error) {
         console.error("❌ Error fetching applications:", error.message);
       } else {
         setApplications(data);
       }
-  
+
       setLoading(false);
     };
-  
+
+
     fetchApplications();
   }, []);
-  
+
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
@@ -107,16 +110,16 @@ const ApplicationsManagement = () => {
           ) : (
             <ul className="space-y-4">
               {applications.map((app) => (
-                <li
-                  key={app.id}
-                  className="p-4 bg-gray-100 rounded-lg"
-                >
+                <li key={app.id} className="p-4 bg-gray-100 rounded-lg">
                   <div className="flex items-center justify-between">
-                    {/* ✅ Name & Status Side by Side */}
+                    {/* ✅ Applicant Name is now a Clickable Link */}
                     <div className="flex items-center gap-3">
-                      <p className="font-semibold text-lg">
+                      <button
+                        onClick={() => navigate(`/profile/${app.user_id}`)}
+                        className="font-semibold text-lg text-blue-600 hover:underline"
+                      >
                         {app.users?.fname} {app.users?.mname} {app.users?.lname}
-                      </p>
+                      </button>
                       <span className={`px-3 py-1 rounded-lg text-lg font-semibold ${getStatusColor(app.status)}`}>
                         {app.status}
                       </span>
@@ -124,11 +127,14 @@ const ApplicationsManagement = () => {
                   </div>
 
                   {/* ✅ Extra Details */}
-                  <p className="text-sm text-gray-600">Age: {app.users?.age}</p>
+                  <p className="text-sm text-gray-600">Gender: {app.users?.gender || "N/A"}</p>
+                  <p className="text-sm text-gray-600">Age: {app.users?.age || "N/A"}</p>
                   <p className="text-sm text-gray-600">Degree: {app.users?.degree}</p>
                   <p className="text-sm text-gray-600">
                     Location: {app.users?.cities?.regions?.name}, {app.users?.cities?.name}
                   </p>
+
+
                   {app.users?.cv && (
                     <a
                       href={app.users.cv}
