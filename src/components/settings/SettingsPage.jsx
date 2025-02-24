@@ -6,6 +6,8 @@ import { Input } from "../ui/input";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import supabase from "../../../createClient";
 
+const degreeOptions = ["High School", "Undergraduate", "CO-OP"];
+
 const SettingsPage = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -15,13 +17,17 @@ const SettingsPage = () => {
     phone: "",
     region: "",
     city: "",
+    degree: "",
+    interest: "",
+    age: "",
+    cv: "",
   });
 
   const [regions, setRegions] = useState([]);
   const [cities, setCities] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState(null); // ✅ State for notifications
+  const [message, setMessage] = useState(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,7 +45,7 @@ const SettingsPage = () => {
 
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("fname, mname, lname, phone_number, region, city, email")
+        .select("fname, mname, lname, phone_number, region, city, email, degree, interest, age, cv")
         .eq("id", userId)
         .single();
 
@@ -54,6 +60,10 @@ const SettingsPage = () => {
           phone: userData.phone_number || "",
           region: userData.region || "",
           city: userData.city || "",
+          degree: userData.degree || "High School",
+          interest: userData.interest || "",
+          age: userData.age || "",
+          cv: userData.cv || "",
         });
       }
 
@@ -88,7 +98,7 @@ const SettingsPage = () => {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    setMessage(null); // ✅ Clear any previous messages
+    setMessage(null);
 
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData.user) {
@@ -107,6 +117,10 @@ const SettingsPage = () => {
         phone_number: formData.phone,
         region: formData.region,
         city: formData.city,
+        degree: formData.degree,
+        interest: formData.interest,
+        age: formData.age,
+        cv: formData.cv,
       })
       .eq("id", userId);
 
@@ -126,7 +140,6 @@ const SettingsPage = () => {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-2xl font-semibold mb-6">Settings</h1>
 
-          {/* ✅ Notification Message */}
           {message && (
             <div
               className={`mb-4 p-3 rounded-lg text-center ${
@@ -165,35 +178,39 @@ const SettingsPage = () => {
                 <Input name="phone" value={formData.phone} onChange={handleInputChange} />
               </div>
 
-              {/* Region & City Dropdowns Side by Side */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Region</label>
-                  <Select onValueChange={handleRegionChange} value={formData.region}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your region" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {regions.map(region => (
-                        <SelectItem key={region.id} value={region.id.toString()}>{region.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+                <Select onValueChange={(value) => setFormData(prev => ({ ...prev, degree: value }))} value={formData.degree}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your degree" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {degreeOptions.map((deg) => (
+                      <SelectItem key={deg} value={deg}>{deg}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                  <Select onValueChange={handleCityChange} value={formData.city} disabled={!formData.region}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={formData.region ? "Select your city" : "Select a region first"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {filteredCities.map(city => (
-                        <SelectItem key={city.id} value={city.id.toString()}>{city.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Interests</label>
+                <textarea
+                  name="interest"
+                  value={formData.interest}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  rows="4"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Age</label>
+                <Input type="number" name="age" value={formData.age} onChange={handleInputChange} />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">CV Link</label>
+                <Input type="url" name="cv" value={formData.cv} onChange={handleInputChange} />
               </div>
 
               <Button type="submit" className="w-full">Save Changes</Button>
