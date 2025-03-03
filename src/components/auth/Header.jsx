@@ -36,7 +36,7 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
       if (storedUser && storedFirstName && storedUserLevel) {
         setUser(JSON.parse(storedUser));
         setFirstName(storedFirstName);
-        setUserLevel(parseInt(storedUserLevel)); // Ensure it's an integer
+        setUserLevel(parseInt(storedUserLevel));
         setLoading(false);
         return;
       }
@@ -89,14 +89,12 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   };
 
   return (
-    <header className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200">
+    <header className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200 relative header z-20">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
-        {/* ✅ Clickable Volunect Logo */}
         <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
           <span className="text-xl font-semibold text-purple-600">Volunect</span>
         </div>
 
-        {/* Main Navigation */}
         <NavigationMenu className="hidden lg:flex flex-1 justify-center">
           <NavigationMenuList className="flex items-center gap-2">
             <NavigationMenuItem>
@@ -108,7 +106,6 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
             <NavigationMenuItem>
               <Button variant="ghost" onClick={() => navigate("/services")}>Services</Button>
             </NavigationMenuItem>
-            {/* ✅ Hide Announcements if user is NOT logged in OR if they are an organization */}
             {user && userLevel !== 2 && (
               <NavigationMenuItem>
                 <AnnouncementsDropdown />
@@ -117,15 +114,12 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        {/* Right Section */}
         <div className="flex items-center gap-4">
-          {/* Search Bar */}
           <div className="hidden md:flex items-center relative w-64">
             <Input type="search" placeholder="Search..." className="pr-8" />
             <Search className="absolute right-2 h-4 w-4 text-gray-500" />
           </div>
 
-          {/* User Auth Section */}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
