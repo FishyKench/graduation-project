@@ -95,7 +95,6 @@ const ApplicationsManagement = () => {
                   <ClipboardList className="w-6 h-6 text-blue-600" />
                   Your Announcements
                 </h1>
-                {/* ✅ "Add Announcement" now navigates to a new page */}
                 <Button
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                   onClick={() => navigate("/applications/new")}
@@ -115,9 +114,9 @@ const ApplicationsManagement = () => {
                       className="p-4 bg-blue-50 border border-blue-300 rounded-lg shadow-sm flex justify-between items-center"
                     >
                       <div>
-                        {/* ✅ Clicking the title navigates to Opportunity Details */}
+                        {/* ✅ Fixed Navigation Path to match `App.jsx` */}
                         <button
-                          onClick={() => navigate(`/opportunity/${announcement.id}`)}
+                          onClick={() => navigate(`/opportunities/${announcement.id}`)}
                           className="text-lg font-semibold text-blue-700 hover:underline"
                         >
                           {announcement.title}

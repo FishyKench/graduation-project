@@ -11,22 +11,22 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
     location: "",
     deadline: "",
     picture: "",
-    description: "", // ✅ New field for description
+    description: "",
+    paid: false, // ✅ New paid toggle
+    salary: "",  // ✅ New salary input (only if paid)
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Get the logged-in user's ID (Organization ID)
     const { data: authData, error: authError } = await supabase.auth.getUser();
     if (authError || !authData.user) {
       console.error("❌ Error getting user:", authError?.message);
       return;
     }
 
-    const orgId = authData.user.id; // Organization ID
+    const orgId = authData.user.id;
 
-    // ✅ Insert the announcement into Supabase
     const { error } = await supabase.from("announcements").insert([
       {
         organization_id: orgId,
@@ -36,7 +36,9 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
         location: formData.location,
         deadline: formData.deadline,
         image_url: formData.picture,
-        description: formData.description || "No description provided.", // ✅ Ensures description is always set
+        description: formData.description || "No description provided.",
+        paid: formData.paid, // ✅ Store paid status
+        salary: formData.paid ? formData.salary : null, // ✅ Only store salary if paid
       },
     ]);
 
@@ -49,8 +51,11 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   return (
@@ -64,7 +69,7 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
             name="type"
             value={formData.type}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border rounded-md"
             required
           >
             <option value="volunteer">Volunteer</option>
@@ -83,7 +88,7 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
             name="degree"
             value={formData.degree}
             onChange={handleChange}
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border rounded-md"
             required
           >
             <option value="highschool">High School</option>
@@ -114,7 +119,33 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
           />
         </div>
 
-        {/* ✅ New Textarea for Description */}
+        {/* ✅ New Paid Toggle */}
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            name="paid"
+            checked={formData.paid}
+            onChange={handleChange}
+            className="w-5 h-5"
+          />
+          <label className="text-sm font-medium text-gray-700">Is this a paid opportunity?</label>
+        </div>
+
+        {/* ✅ Salary Input (Only if Paid) */}
+        {formData.paid && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Salary (per month)</label>
+            <Input
+              type="number"
+              name="salary"
+              value={formData.salary}
+              onChange={handleChange}
+              min="1"
+              required={formData.paid}
+            />
+          </div>
+        )}
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
           <textarea
@@ -122,7 +153,7 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
             value={formData.description}
             onChange={handleChange}
             placeholder="Enter a description..."
-            className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="w-full px-3 py-2 border rounded-md"
             rows="3"
           />
         </div>

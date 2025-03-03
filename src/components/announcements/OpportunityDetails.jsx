@@ -15,7 +15,7 @@ const OpportunityDetails = () => {
   const [user, setUser] = useState(null);
   const [userLevel, setUserLevel] = useState(() => {
     return localStorage.getItem("userLevel") ? parseInt(localStorage.getItem("userLevel")) : null;
-  }); // ✅ Load user level instantly from localStorage
+  });
 
   useEffect(() => {
     const fetchOpportunity = async () => {
@@ -25,8 +25,9 @@ const OpportunityDetails = () => {
         .from("announcements")
         .select(`
           id, title, type, location, degree, deadline, image_url, description,
-          organization_id, 
-          users:organization_id (fname) 
+          paid, salary,
+          organization_id,
+          users:organization_id (fname)
         `)
         .eq("id", id)
         .single();
@@ -51,12 +52,10 @@ const OpportunityDetails = () => {
 
       setUser(authData.user);
 
-      // ✅ Check if level is already stored in localStorage
       let storedLevel = localStorage.getItem("userLevel");
       if (storedLevel) {
-        setUserLevel(parseInt(storedLevel)); // Use cached value
+        setUserLevel(parseInt(storedLevel));
       } else {
-        // Fetch from Supabase if not found in localStorage
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("level")
@@ -65,7 +64,7 @@ const OpportunityDetails = () => {
 
         if (!userError && userData) {
           setUserLevel(userData.level);
-          localStorage.setItem("userLevel", userData.level); // ✅ Store in localStorage
+          localStorage.setItem("userLevel", userData.level);
         }
       }
 
@@ -91,7 +90,7 @@ const OpportunityDetails = () => {
   }, [opportunity, id]);
 
   const handleApply = async () => {
-    if (!user || !opportunity || userLevel === 2) return; // ✅ Organizations can't apply
+    if (!user || !opportunity || userLevel === 2) return;
 
     console.log("🔎 Debugging Application Submission:", {
       user_id: user.id,
@@ -138,7 +137,6 @@ const OpportunityDetails = () => {
       <main className="flex-1 py-8 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            {/* Hero Image */}
             <div className="relative h-64 w-full">
               <img
                 src={opportunity.image_url}
@@ -152,9 +150,7 @@ const OpportunityDetails = () => {
               </div>
             </div>
 
-            {/* Content */}
             <div className="p-6 space-y-6">
-              {/* Quick Info */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-gray-500" />
@@ -182,7 +178,16 @@ const OpportunityDetails = () => {
                 </div>
               </div>
 
-              {/* Description */}
+              {/* ✅ Paid Info Section Fixed */}
+              <div>
+                <h2 className="text-xl font-semibold mb-3">Compensation</h2>
+                <p className="text-gray-600">
+                  {opportunity.paid === true || opportunity.paid === "paid"
+                    ? `💰 Paid - Salary: ${opportunity.salary ? `${opportunity.salary} SAR` : "Salary Not Specified"}`
+                    : "Unpaid"}
+                </p>
+              </div>
+
               <div>
                 <h2 className="text-xl font-semibold mb-3">Description</h2>
                 <p className="text-gray-600">
@@ -190,11 +195,10 @@ const OpportunityDetails = () => {
                 </p>
               </div>
 
-              {/* Apply Button */}
               <div className="flex justify-center pt-4">
                 <Button
                   onClick={handleApply}
-                  disabled={alreadyApplied || userLevel === 2} // ✅ Organizations can't click
+                  disabled={alreadyApplied || userLevel === 2}
                   className={`px-8 py-3 text-lg ${
                     alreadyApplied || userLevel === 2
                       ? "bg-gray-400 cursor-not-allowed"

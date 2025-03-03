@@ -16,7 +16,7 @@ import ApplicationTracker from "./components/applications/ApplicationTracker";
 import OpportunityDetails from "./components/announcements/OpportunityDetails";
 import SettingsPage from "./components/settings/SettingsPage";
 import ApplicationSuccess from "./components/applications/ApplicationSuccess";
-import NewAnnouncment from "./components/applications/NewAnnouncement";
+import NewAnnouncement from "./components/applications/NewAnnouncement";
 
 function App() {
   return (
@@ -37,16 +37,15 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/application-success" element={<ApplicationSuccess />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
 
           {/* ✅ Application Routes */}
           <Route path="/applications/status" element={<ApplicationStatus />} />
           <Route path="/applications/manage" element={<ApplicationsManagement />} />
-          <Route path="/applications/new" element={<NewAnnouncment />} />
+          <Route path="/applications/new" element={<NewAnnouncement />} />
           <Route path="/applications/tracker" element={<ApplicationTracker />} />
 
-          {/* ✅ FIXED: Opportunity Details Route */}
-          <Route path="/opportunity/:id" element={<OpportunityDetails />} />
+          {/* ✅ Opportunity Details Route (Fixed to match navigation) */}
+          <Route path="/opportunities/:id" element={<OpportunityDetails />} />
         </Routes>
       </div>
     </Suspense>

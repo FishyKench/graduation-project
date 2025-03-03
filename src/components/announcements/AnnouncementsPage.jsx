@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
-import { Search, Briefcase, Users, GraduationCap, School, BookOpen } from "lucide-react";
+import { Search, Briefcase, Users, GraduationCap, School, BookOpen, DollarSign } from "lucide-react";
 import supabase from "../../../createClient";
 
 const AnnouncementsPage = () => {
   const [announcements, setAnnouncements] = useState([]);
   const [selectedType, setSelectedType] = useState("all");
   const [selectedDegree, setSelectedDegree] = useState("all");
+  const [selectedPaid, setSelectedPaid] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const navigate = useNavigate(); // ✅ Use navigate for routing
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -30,14 +31,20 @@ const AnnouncementsPage = () => {
   const typeFilters = [
     { id: "all", label: "All Opportunities", icon: Users },
     { id: "internship", label: "Internships", icon: Briefcase },
-    { id: "volunteer", label: "Volunteer", icon: Users }
+    { id: "volunteer", label: "Volunteer", icon: Users },
   ];
 
   const degreeFilters = [
     { id: "all", label: "All Programs", icon: GraduationCap },
     { id: "High School", label: "High School", icon: School },
     { id: "Undergraduate", label: "Undergraduate", icon: BookOpen },
-    { id: "CO-OP", label: "CO-OP", icon: GraduationCap }
+    { id: "CO-OP", label: "CO-OP", icon: GraduationCap },
+  ];
+
+  const paidFilters = [
+    { id: "all", label: "All", icon: DollarSign },
+    { id: "paid", label: "Paid", icon: DollarSign },
+    { id: "unpaid", label: "Unpaid", icon: DollarSign },
   ];
 
   const filteredAnnouncements = announcements.filter((announcement) => {
@@ -47,8 +54,12 @@ const AnnouncementsPage = () => {
       searchQuery === "" ||
       announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       announcement.organization.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesPaid =
+      selectedPaid === "all" ||
+      (selectedPaid === "paid" && announcement.paid) ||
+      (selectedPaid === "unpaid" && !announcement.paid);
 
-    return matchesType && matchesDegree && matchesSearch;
+    return matchesType && matchesDegree && matchesSearch && matchesPaid;
   });
 
   return (
@@ -81,8 +92,9 @@ const AnnouncementsPage = () => {
               <Button
                 key={filter.id}
                 variant="outline"
-                className={`flex items-center gap-2 ${selectedType === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
-                  }`}
+                className={`flex items-center gap-2 ${
+                  selectedType === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
+                }`}
                 onClick={() => setSelectedType(filter.id)}
               >
                 <filter.icon className="h-4 w-4" />
@@ -93,16 +105,37 @@ const AnnouncementsPage = () => {
         </div>
 
         {/* 🎓 Degree Filters */}
-        <div className="mb-8">
+        <div className="mb-4">
           <h2 className="text-sm font-medium text-gray-700 mb-2">Filter by Degree</h2>
           <div className="flex gap-2 flex-wrap">
             {degreeFilters.map((filter) => (
               <Button
                 key={filter.id}
                 variant="outline"
-                className={`flex items-center gap-2 ${selectedDegree === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
-                  }`}
+                className={`flex items-center gap-2 ${
+                  selectedDegree === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
+                }`}
                 onClick={() => setSelectedDegree(filter.id)}
+              >
+                <filter.icon className="h-4 w-4" />
+                {filter.label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* 💰 Paid Filters */}
+        <div className="mb-8">
+          <h2 className="text-sm font-medium text-gray-700 mb-2">Filter by Payment</h2>
+          <div className="flex gap-2 flex-wrap">
+            {paidFilters.map((filter) => (
+              <Button
+                key={filter.id}
+                variant="outline"
+                className={`flex items-center gap-2 ${
+                  selectedPaid === filter.id ? "bg-purple-50 text-purple-600 border-purple-200" : ""
+                }`}
+                onClick={() => setSelectedPaid(filter.id)}
               >
                 <filter.icon className="h-4 w-4" />
                 {filter.label}
@@ -115,21 +148,34 @@ const AnnouncementsPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAnnouncements.length > 0 ? (
             filteredAnnouncements.map((announcement) => (
-              <div key={announcement.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div
+                key={announcement.id}
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+              >
                 <img src={announcement.image_url} alt={announcement.title} className="w-full h-48 object-cover" />
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <span
-                      className={`text-xs font-medium px-2 py-1 rounded-full ${announcement.type === "internship" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
-                        }`}
+                      className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        announcement.type === "internship"
+                          ? "bg-blue-100 text-blue-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
                     >
                       {announcement.type === "internship" ? "Internship" : "Volunteer"}
                     </span>
                     <span className="text-xs text-gray-500">{announcement.location}</span>
                   </div>
+
                   <h3 className="text-lg font-semibold text-gray-900 mb-1">{announcement.title}</h3>
                   <p className="text-sm text-gray-600 mb-4">{announcement.organization}</p>
-                  <div className="flex items-center justify-between">
+
+                  {/* ✅ Display "Paid" in Green, "Unpaid" in Neutral Gray */}
+                  <p className={`text-sm font-medium ${announcement.paid ? "text-green-600" : "text-gray-600"}`}>
+                    {announcement.paid ? `💰 Paid - ${announcement.salary || "Amount Not Specified"}` : "Unpaid"}
+                  </p>
+
+                  <div className="flex items-center justify-between mt-2">
                     <span className="text-xs text-gray-500">
                       Deadline: {new Date(announcement.deadline).toLocaleDateString()}
                     </span>

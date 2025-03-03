@@ -106,7 +106,7 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
             <NavigationMenuItem>
               <Button variant="ghost" onClick={() => navigate("/services")}>Services</Button>
             </NavigationMenuItem>
-            {user && userLevel !== 2 && (
+            {user && (
               <NavigationMenuItem>
                 <AnnouncementsDropdown />
               </NavigationMenuItem>
