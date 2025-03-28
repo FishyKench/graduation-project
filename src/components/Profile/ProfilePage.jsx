@@ -80,7 +80,7 @@ const ProfilePage = () => {
               <p className="text-gray-500">{displayProfile.email}</p>
               <p className="text-gray-500">{displayProfile.phone_number}</p>
               {/* Volunteer Hours Badge */}
-              {displayProfile.volunteer_hours > 0 && (
+              {displayProfile.volunteer_hours >= 0 && (
                 <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
                   <span className="mr-1">
                     <svg
