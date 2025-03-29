@@ -1,44 +1,69 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import supabase from "../../../createClient"; // ✅ Import Supabase
+import supabase from "../../../createClient";
 
 const VolunteerForm = ({ onSubmit = () => {} }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     firstName: "",
-    middleName: "", // ✅ BACK AGAIN!
+    middleName: "",
     lastName: "",
-    age: "", // ✅ MOVED TO THE RIGHT SPOT
     phone: "",
     region: "",
     city: "",
     degree: "",
-    interests: "",
+    interest: "", 
+    description: "",
     cvLink: "",
+    gender: "",
+    age: "",
   });
 
   const [regions, setRegions] = useState([]);
   const [cities, setCities] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRegions = async () => {
-      const { data, error } = await supabase.from("regions").select("id, name");
-      if (!error) setRegions(data);
+      try {
+        const { data, error } = await supabase.from("regions").select("id, name");
+        if (error) throw error;
+        setRegions(data);
+      } catch (error) {
+        console.error("Error fetching regions:", error);
+      }
     };
-
-    const fetchCities = async () => {
-      const { data, error } = await supabase.from("cities").select("id, name");
-      if (!error) setCities(data);
-    };
-
-    Promise.all([fetchRegions(), fetchCities()]).then(() => setLoading(false));
+    fetchRegions();
   }, []);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      if (!formData.region) return;
+      try {
+        const { data, error } = await supabase.from("cities").select("id, name").eq("region_id", formData.region);
+        if (error) throw error;
+        setCities(data);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    };
+    fetchCities();
+  }, [formData.region]);
+
+  const degrees = ["High School", "Undergraduate", "CO-OP"];
+  const genders = [
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.degree || !formData.region || !formData.city) {
+      alert("Please select all required fields (degree, region, city)");
+      return;
+    }
+    console.log("Form data before submission:", formData);
     onSubmit(formData);
   };
 
@@ -47,52 +72,35 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-      ...(name === "region" ? { city: "" } : {}), // Reset city when region changes
+      ...(name === "region" ? { city: "" } : {}),
     }));
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full">
-      <div className="grid grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            First Name <span className="text-red-500">*</span>
-          </label>
-          <Input name="firstName" value={formData.firstName} onChange={handleChange} required />
-        </div>
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Middle Name <span className="text-red-500">*</span>
-          </label>
-          <Input name="middleName" value={formData.middleName} onChange={handleChange} required />
-        </div>
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Last Name <span className="text-red-500">*</span>
-          </label>
-          <Input name="lastName" value={formData.lastName} onChange={handleChange} required />
-        </div>
-      </div>
-
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Age <span className="text-red-500">*</span>
-        </label>
-        <Input type="number" name="age" value={formData.age} onChange={handleChange} min="15" max="65" required />
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Email <span className="text-red-500">*</span>
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Email</label>
         <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Password <span className="text-red-500">*</span>
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Password</label>
         <Input type="password" name="password" value={formData.password} onChange={handleChange} required minLength={8} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">First Name</label>
+          <Input name="firstName" value={formData.firstName} onChange={handleChange} required />
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Middle Name</label>
+          <Input name="middleName" value={formData.middleName} onChange={handleChange} />
+        </div>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Last Name</label>
+          <Input name="lastName" value={formData.lastName} onChange={handleChange} required />
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -101,100 +109,80 @@ const VolunteerForm = ({ onSubmit = () => {} }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Region <span className="text-red-500">*</span>
-        </label>
-        <select
-          name="region"
-          value={formData.region}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-        >
-          <option value="">Select a region</option>
-          {loading ? (
-            <option>Loading...</option>
-          ) : (
-            regions.map((region) => (
-              <option key={region.id} value={region.id}>
-                {region.name}
-              </option>
-            ))
-          )}
+        <label className="block text-sm font-medium text-gray-700">Gender</label>
+        <select name="gender" value={formData.gender} onChange={handleChange} className="w-full p-2 border rounded" required>
+          <option value="" disabled>Select Gender</option>
+          {genders.map((gender) => (
+            <option key={gender.value} value={gender.value}>{gender.label}</option>
+          ))}
         </select>
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          City <span className="text-red-500">*</span>
-        </label>
-        <select
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-        >
-          <option value="">Select a city</option>
-          {loading ? (
-            <option>Loading...</option>
-          ) : (
-            cities.map((city) => (
-              <option key={city.id} value={city.id}>
-                {city.name}
-              </option>
-            ))
-          )}
-        </select>
+        <label className="block text-sm font-medium text-gray-700">Age</label>
+        <Input type="number" name="age" value={formData.age} onChange={handleChange} min={1} required />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Degree <span className="text-red-500">*</span>
-        </label>
-        <select
-          name="degree"
-          value={formData.degree}
-          onChange={handleChange}
-          required
-          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-        >
-          <option value="">Select your degree</option>
-          <option value="High School">High School</option>
-          <option value="Undergraduate">Undergraduate</option>
-          <option value="CO-OP">CO-OP</option>
-        </select>
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Interests
-        </label>
+        <label className="block text-sm font-medium text-gray-700">Interest</label>
         <textarea
-          name="interests"
-          value={formData.interests}
+          name="interest"
+          value={formData.interest}
           onChange={handleChange}
-          className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 min-h-[100px]"
-          placeholder="Tell us about your interests and what kind of volunteer work you're looking for..."
+          className="w-full p-2 border rounded"
+          placeholder="Enter your interests"
         />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          CV Link
-        </label>
-        <Input
-          type="url"
-          name="cvLink"
-          value={formData.cvLink}
+        <label className="block text-sm font-medium text-gray-700">Description</label>
+        <textarea
+          name="description"
+          value={formData.description}
           onChange={handleChange}
-          placeholder="https://example.com/your-cv"
+          className="w-full p-2 border rounded"
+          placeholder="Brief description about yourself"
         />
       </div>
 
-      <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6">
-        Create Account
-      </Button>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">Region</label>
+          <select name="region" value={formData.region} onChange={handleChange} className="w-full p-2 border rounded" required>
+            <option value="" disabled>Select a region</option>
+            {regions.map((region) => (
+              <option key={region.id} value={region.id}>{region.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">City</label>
+          <select name="city" value={formData.city} onChange={handleChange} className="w-full p-2 border rounded" required>
+            <option value="" disabled>Select a city</option>
+            {cities.map((city) => (
+              <option key={city.id} value={city.id}>{city.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">Degree</label>
+        <select name="degree" value={formData.degree} onChange={handleChange} className="w-full p-2 border rounded" required>
+          <option value="" disabled>Select a degree</option>
+          {degrees.map((degree) => (
+            <option key={degree} value={degree}>{degree}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">CV Link</label>
+        <Input type="url" name="cvLink" value={formData.cvLink} onChange={handleChange} placeholder="https://example.com/your-cv" />
+      </div>
+
+      <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6">Create Account</Button>
     </form>
   );
 };

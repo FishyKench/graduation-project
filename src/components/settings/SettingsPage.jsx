@@ -16,6 +16,7 @@ const SettingsPage = () => {
     region: "",
     city: "",
     degree: "",
+    gender: "",
     cv: "",
     description: "",
     interest: "",
@@ -26,7 +27,6 @@ const SettingsPage = () => {
       try {
         setLoading(true);
 
-        // Try to get the user ID from Supabase auth if not provided in the URL
         let userId = id;
         if (!userId) {
           const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -40,7 +40,7 @@ const SettingsPage = () => {
         const { data, error } = await supabase
           .from("users")
           .select(
-            "email, fname, mname, lname, phone_number, region, city, degree, cv, description, interest"
+            "email, fname, mname, lname, phone_number, region, city, degree, gender, cv, description, interest"
           )
           .eq("id", userId)
           .single();
@@ -138,6 +138,32 @@ const SettingsPage = () => {
               </div>
             </div>
 
+            <div>
+              <label className="block font-medium">Phone Number</label>
+              <input
+                className="w-full p-2 border rounded"
+                type="text"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div>
+              <label className="block font-medium">Gender</label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleInputChange}
+                required
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option value="">Select your gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block font-medium">Region</label>
@@ -170,17 +196,6 @@ const SettingsPage = () => {
                   <option value="4">Medina</option>
                 </select>
               </div>
-            </div>
-
-            <div>
-              <label className="block font-medium">Phone Number</label>
-              <input
-                className="w-full p-2 border rounded"
-                type="text"
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={handleInputChange}
-              />
             </div>
 
             <div>

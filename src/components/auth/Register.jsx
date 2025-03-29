@@ -60,6 +60,7 @@ const Register = () => {
       city: parseInt(formData.city) || null,
       level: userType === "volunteer" ? 1 : 2, // 1 = volunteer, 2 = org
       created_at: new Date().toISOString(),
+      gender: formData.gender,
     };
   
     // ✅ Add extra fields for volunteers
