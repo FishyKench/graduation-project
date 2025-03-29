@@ -16,8 +16,9 @@ const NewAnnouncement = () => {
     deadline: "",
     picture: "",
     description: "",
-    paid: false, // ✅ Updated from is_paid → paid (matches DB)
-    salary: "", // ✅ Salary input (only if paid)
+    paid: false,
+    salary: "",
+    hours: "", // ✅ Added hours field
   });
 
   const handleSubmit = async (e) => {
@@ -41,8 +42,9 @@ const NewAnnouncement = () => {
         deadline: formData.deadline,
         image_url: formData.picture,
         description: formData.description || "No description provided.",
-        paid: formData.paid, // ✅ Correct field name
-        salary: formData.paid ? parseFloat(formData.salary) || null : null, // ✅ Store salary only if paid is true
+        paid: formData.paid,
+        salary: formData.paid ? parseFloat(formData.salary) || null : null,
+        hours: formData.type === "volunteer" ? parseInt(formData.hours) || null : null, // ✅ Save hours if volunteer
       },
     ]);
 
@@ -152,6 +154,22 @@ const NewAnnouncement = () => {
                   onChange={handleChange}
                   placeholder="Enter salary amount"
                   min="0"
+                  required
+                />
+              </div>
+            )}
+
+            {/* Hours (Only if Type is Volunteer) */}
+            {formData.type === "volunteer" && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Hours</label>
+                <Input
+                  type="number"
+                  name="hours"
+                  value={formData.hours}
+                  onChange={handleChange}
+                  placeholder="Enter the number of volunteer hours"
+                  min="1"
                   required
                 />
               </div>
