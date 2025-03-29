@@ -173,6 +173,9 @@ const AnnouncementsPage = () => {
                   <p className={`text-sm font-medium ${announcement.paid ? "text-green-600" : "text-gray-600"}`}>
                     {announcement.paid ? `💰 Paid - ${announcement.salary || "Amount Not Specified"}` : "Unpaid"}
                   </p>
+                  <p className="text-sm font-medium text-gray-700">
+                    🕒 Hours Offered: {announcement.hours || "Not Specified"}
+                  </p>
                   <Button variant="outline" size="sm" className="mt-2" onClick={() => navigate(`/opportunities/${announcement.id}`)}>
                     Learn More
                   </Button>
