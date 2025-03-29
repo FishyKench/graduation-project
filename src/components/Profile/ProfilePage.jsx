@@ -31,7 +31,7 @@ const ProfilePage = () => {
     const fetchUserById = async (userId) => {
       const { data, error } = await supabase
         .from("users")
-        .select("fname, mname, lname, email, phone_number, age, degree, gender, cv, volunteer_hours, description, cities(name, regions(name))")
+        .select("fname, mname, lname, email, phone_number, age, degree, gender, cv, volunteer_hours, description, interest, cities(name, regions(name))")
         .eq("id", userId)
         .single();
 
@@ -155,6 +155,14 @@ const ProfilePage = () => {
                 </a>
               </div>
             )}
+
+                      {/* Interest Section */}
+          {displayProfile.interest && (
+            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+              <h2 className="text-lg font-medium mb-2">Interests</h2>
+              <p className="text-gray-700">{displayProfile.interest}</p>
+            </div>
+          )}
 
             {/* Contact Information Section */}
             <div>
