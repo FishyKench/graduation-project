@@ -68,8 +68,9 @@ const Register = () => {
       userMetadata = {
         ...userMetadata,
         degree: formData.degree, // ✅ Degree selection gets stored
-        interest: formData.interests, // ✅ Interests get stored
+        interest: formData.interest, // ✅ Interests get stored
         cv: formData.cvLink, // ✅ CV link gets stored
+        description: formData.description, // ✅ Description gets stored
       };
     }
   
