@@ -12,6 +12,7 @@ const ApplicationsManagement = () => {
   const [applications, setApplications] = useState([]);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [confirmedHours, setConfirmedHours] = useState({});
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -28,7 +29,7 @@ const ApplicationsManagement = () => {
 
       const { data, error } = await supabase
         .from("announcements")
-        .select("id, title, created_at")
+        .select("id, title, created_at, hours")
         .eq("organization_id", userId);
 
       if (!error) setAnnouncements(data);
@@ -45,7 +46,7 @@ const ApplicationsManagement = () => {
     const { data, error } = await supabase
       .from("applications")
       .select(`
-        id, status, created_at,
+        id, status, created_at, completed_hours,
         users!applications_user_id_fkey (
           id, fname, mname, lname, gender, degree, age, cv,
           cities ( name, regions ( name ) )
@@ -65,7 +66,35 @@ const ApplicationsManagement = () => {
 
     if (!error) {
       setApplications((prev) =>
-        prev.map((app) => (app.id === appId ? { ...app, status: newStatus } : app))
+        prev.map((app) =>
+          app.id === appId ? { ...app, status: newStatus } : app
+        )
+      );
+    }
+  };
+
+  const confirmHours = async (appId, hours) => {
+    const app = applications.find((a) => a.id === appId);
+    if (!app || !app.users?.id) return;
+
+    const volunteerId = app.users.id;
+    const confirmed = parseInt(hours) || 0;
+
+    const { error: appErr } = await supabase
+      .from("applications")
+      .update({ completed_hours: confirmed })
+      .eq("id", appId);
+
+    const { error: userErr } = await supabase.rpc("increment_volunteer_hours", {
+      user_id_input: volunteerId,
+      added_hours: confirmed,
+    });
+
+    if (!appErr && !userErr) {
+      setApplications((prev) =>
+        prev.map((a) =>
+          a.id === appId ? { ...a, completed_hours: confirmed, confirmed: true } : a
+        )
       );
     }
   };
@@ -81,6 +110,11 @@ const ApplicationsManagement = () => {
       default:
         return "bg-gray-100 text-gray-800 border-gray-400";
     }
+  };
+
+  const getAnnouncementHours = () => {
+    const current = announcements.find((a) => a.id === selectedAnnouncement);
+    return current?.hours || 0;
   };
 
   return (
@@ -114,7 +148,6 @@ const ApplicationsManagement = () => {
                       className="p-4 bg-blue-50 border border-blue-300 rounded-lg shadow-sm flex justify-between items-center"
                     >
                       <div>
-                        {/* ✅ Fixed Navigation Path to match `App.jsx` */}
                         <button
                           onClick={() => navigate(`/opportunities/${announcement.id}`)}
                           className="text-lg font-semibold text-blue-700 hover:underline"
@@ -185,25 +218,58 @@ const ApplicationsManagement = () => {
                           View CV
                         </a>
                       )}
-                      <div className="flex gap-2 mt-3">
-                        <Button
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                          onClick={() => updateApplicationStatus(app.id, "approved")}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                          onClick={() => updateApplicationStatus(app.id, "pending")}
-                        >
-                          Pending
-                        </Button>
-                        <Button
-                          className="bg-red-600 hover:bg-red-700 text-white"
-                          onClick={() => updateApplicationStatus(app.id, "rejected")}
-                        >
-                          Reject
-                        </Button>
+
+                      <div className="flex gap-2 mt-3 items-center flex-wrap">
+                        {app.status === "approved" && (
+                          <>
+                            <input
+                              type="number"
+                              min={0}
+                              value={confirmedHours[app.id] ?? app.completed_hours ?? getAnnouncementHours()}
+                              onChange={(e) => {
+                                if (!app.confirmed) {
+                                  setConfirmedHours({
+                                    ...confirmedHours,
+                                    [app.id]: e.target.value,
+                                  });
+                                }
+                              }}
+                              className={`w-24 p-1 border rounded text-sm ${
+                                app.confirmed ? "bg-gray-100 text-gray-500" : "bg-white"
+                              }`}
+                              disabled={app.confirmed}
+                            />
+                            {!app.confirmed ? (
+                              <Button
+                                className="bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                                onClick={() =>
+                                  confirmHours(app.id, confirmedHours[app.id] ?? getAnnouncementHours())
+                                }
+                              >
+                                Confirm
+                              </Button>
+                            ) : (
+                              <span className="text-green-700 text-sm font-medium">✔ Confirmed</span>
+                            )}
+                          </>
+                        )}
+
+                        {app.status === "pending" && (
+                          <>
+                            <Button
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => updateApplicationStatus(app.id, "approved")}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => updateApplicationStatus(app.id, "rejected")}
+                            >
+                              Reject
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </li>
                   ))}

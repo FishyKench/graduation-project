@@ -72,8 +72,21 @@ const OpportunityDetails = () => {
 
       // Check if the application is stored locally to improve speed
       const localApplied = localStorage.getItem(`applied_${authData.user.id}_${id}`);
+
       if (localApplied) {
-        setAlreadyApplied(true);
+        const { data, error } = await supabase
+          .from("applications")
+          .select("id")
+          .eq("user_id", authData.user.id)
+          .eq("announcement_id", id)
+          .single();
+      
+        if (!error && data) {
+          setAlreadyApplied(true);
+        } else {
+          localStorage.removeItem(`applied_${authData.user.id}_${id}`);
+          setAlreadyApplied(false);
+        }
         return;
       }
 
