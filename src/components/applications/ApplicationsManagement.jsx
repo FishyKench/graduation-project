@@ -46,7 +46,7 @@ const ApplicationsManagement = () => {
     const { data, error } = await supabase
       .from("applications")
       .select(`
-        id, status, created_at, completed_hours,
+        id, status, created_at, completed_hours, confirmed,
         users!applications_user_id_fkey (
           id, fname, mname, lname, gender, degree, age, cv,
           cities ( name, regions ( name ) )
@@ -70,6 +70,14 @@ const ApplicationsManagement = () => {
           app.id === appId ? { ...app, status: newStatus } : app
         )
       );
+
+      if (newStatus === "approved") {
+        const announcementHours = getAnnouncementHours();
+        setConfirmedHours((prev) => ({
+          ...prev,
+          [appId]: announcementHours,
+        }));
+      }
     }
   };
 
@@ -82,7 +90,7 @@ const ApplicationsManagement = () => {
 
     const { error: appErr } = await supabase
       .from("applications")
-      .update({ completed_hours: confirmed })
+      .update({ completed_hours: confirmed, confirmed: true })
       .eq("id", appId);
 
     const { error: userErr } = await supabase.rpc("increment_volunteer_hours", {
@@ -225,7 +233,7 @@ const ApplicationsManagement = () => {
                             <input
                               type="number"
                               min={0}
-                              value={confirmedHours[app.id] ?? app.completed_hours ?? getAnnouncementHours()}
+                              value={confirmedHours[app.id] ?? getAnnouncementHours()}
                               onChange={(e) => {
                                 if (!app.confirmed) {
                                   setConfirmedHours({
