@@ -3,8 +3,10 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import supabase from "../../../createClient"; // ✅ Ensure correct import
+import { useTranslation } from "react-i18next";
 
 const OrganizationForm = ({ onSubmit = () => {} }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -103,7 +105,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
       {/* Email */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Email <span className="text-red-500">*</span>
+        {t("email")} <span className="text-red-500">*</span>
         </label>
         <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
       </div>
@@ -111,7 +113,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
       {/* Password */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Password <span className="text-red-500">*</span>
+        {t("password")} <span className="text-red-500">*</span>
         </label>
         <Input type="password" name="password" value={formData.password} onChange={handleChange} required minLength={8} />
       </div>
@@ -119,7 +121,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
       {/* Organization Name */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Organization Name <span className="text-red-500">*</span>
+        {t("settings.org.name")} <span className="text-red-500">*</span>
         </label>
         <Input name="name" value={formData.name} onChange={handleChange} required />
       </div>
@@ -127,7 +129,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
       {/* Phone Number */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Phone Number <span className="text-red-500">*</span>
+        {t("profile.phone")} <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-[100px_1fr] gap-2">
           <div className="flex items-center space-x-2 border rounded-md px-3 py-2">
@@ -141,9 +143,9 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
       {/* Location Address */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Location Address <span className="text-red-500">*</span>
+        {t("profile.location")} <span className="text-red-500">*</span>
         </label>
-        <Input name="location" value={formData.location} onChange={handleChange} placeholder="Street address" required />
+        <Input name="location" value={formData.location} onChange={handleChange} placeholder={t("Street address")} required />
       </div>
 
       {/* Region & City Dropdowns */}
@@ -153,7 +155,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
             Region <span className="text-red-500">*</span>
           </label>
           <select name="region" value={formData.region} onChange={handleChange} required className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-            <option value="">Select a region</option>
+            <option value="">{t("settings.selectRegion")}</option>
             {regions.map((region) => (
               <option key={region.id} value={region.id}>{region.name}</option>
             ))}
@@ -162,10 +164,10 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
 
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            City <span className="text-red-500">*</span>
+          {t("settings.city")} <span className="text-red-500">*</span>
           </label>
           <select name="city" value={formData.city} onChange={handleChange} required disabled={!formData.region} className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-            <option value="">Select a city</option>
+            <option value="">{t("settings.selectCity")}</option>
             {cities
               .filter((city) => city.region_id === parseInt(formData.region))
               .map((city) => (
@@ -177,7 +179,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
 
       {/* Submit Button */}
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6">
-        Create Account
+      {t("createAccount")}
       </Button>
     </form>
   );

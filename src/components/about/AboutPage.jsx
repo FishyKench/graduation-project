@@ -2,6 +2,7 @@ import React from "react";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
+import { useTranslation } from "react-i18next";
 import {
   Users,
   Building2,
@@ -12,35 +13,33 @@ import {
 } from "lucide-react";
 
 const AboutPage = () => {
+  const { t } = useTranslation();
+
   const stats = [
-    { number: "1000+", label: "Active Volunteers", icon: Users },
-    { number: "100+", label: "Partner Organizations", icon: Building2 },
-    { number: "500+", label: "Opportunities Posted", icon: Target },
+    { number: "1000+", label: t("stats.activeVolunteers"), icon: Users },
+    { number: "100+", label: t("stats.partnerOrganizations"), icon: Building2 },
+    { number: "500+", label: t("stats.opportunitiesPosted"), icon: Target },
   ];
 
   const benefits = [
     {
-      title: "Access to Qualified Talent",
-      description:
-        "Connect with motivated students and graduates from top Saudi institutions.",
+      title: t("benefits.talent.title"),
+      description: t("benefits.talent.desc"),
       icon: GraduationCap,
     },
     {
-      title: "Streamlined Recruitment",
-      description:
-        "Easy-to-use platform for posting opportunities and managing applications.",
+      title: t("benefits.recruitment.title"),
+      description: t("benefits.recruitment.desc"),
       icon: Target,
     },
     {
-      title: "Quality Assurance",
-      description:
-        "All volunteers are verified and pre-screened for their skills and commitment.",
+      title: t("benefits.quality.title"),
+      description: t("benefits.quality.desc"),
       icon: Award,
     },
     {
-      title: "Community Impact",
-      description:
-        "Make a difference while developing future talent for your organization.",
+      title: t("benefits.impact.title"),
+      description: t("benefits.impact.desc"),
       icon: Handshake,
     },
   ];
@@ -54,11 +53,10 @@ const AboutPage = () => {
         <div className="bg-purple-600 text-white py-20">
           <div className="max-w-7xl mx-auto px-4">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Connecting Organizations with Passionate Volunteers
+              {t("about.hero.title")}
             </h1>
             <p className="text-xl md:text-2xl text-purple-100 mb-8 max-w-3xl">
-              Volunect is Saudi Arabia's premier platform bridging the gap
-              between organizations and motivated volunteers.
+              {t("about.hero.subtitle")}
             </p>
           </div>
         </div>
@@ -85,20 +83,14 @@ const AboutPage = () => {
         <section className="py-16 px-4 bg-white">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12">
-              Our Mission
+              {t("about.mission")}
             </h2>
             <div className="prose lg:prose-lg mx-auto text-center">
               <p className="text-lg text-gray-600 mb-6">
-                At Volunect, we're dedicated to fostering meaningful connections
-                between organizations and volunteers. Our platform serves as a
-                bridge, helping organizations find dedicated volunteers while
-                providing valuable opportunities for personal and professional
-                growth.
+                {t("about.mission.text1")}
               </p>
               <p className="text-lg text-gray-600">
-                We believe in the power of volunteerism to transform both
-                individuals and communities, creating lasting positive impact
-                across Saudi Arabia.
+                {t("about.mission.text2")}
               </p>
             </div>
           </div>
@@ -108,11 +100,10 @@ const AboutPage = () => {
         <section className="py-16 px-4 bg-gray-50">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-4">
-              Why Organizations Choose Volunect
+              {t("about.benefits.title")}
             </h2>
             <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">
-              Join hundreds of organizations already benefiting from our
-              platform
+              {t("about.benefits.subtitle")}
             </p>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -137,18 +128,16 @@ const AboutPage = () => {
         {/* CTA Section */}
         <section className="py-16 px-4 bg-purple-600 text-white">
           <div className="max-w-7xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-4">
-              Ready to Make an Impact?
-            </h2>
+            <h2 className="text-3xl font-bold mb-4">{t("about.cta.title")}</h2>
             <p className="text-xl text-purple-100 mb-8">
-              Join our growing community of organizations making a difference
+              {t("about.cta.subtitle")}
             </p>
             <Button
               size="lg"
               className="bg-white text-purple-600 hover:bg-gray-100"
               onClick={() => (window.location.href = "/register")}
             >
-              Register Your Organization
+              {t("about.cta.button")}
             </Button>
           </div>
         </section>

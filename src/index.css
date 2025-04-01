@@ -95,3 +95,17 @@
     @apply bg-background text-foreground;
   }
 }
+
+  /* RTL Support */
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  [dir="rtl"] .rtl-mirror {
+    @apply mr-auto ml-0;
+  }
+
+  [dir="rtl"] .ltr-mirror {
+    @apply ml-auto mr-0;
+  }
+

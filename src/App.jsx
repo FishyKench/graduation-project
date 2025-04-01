@@ -1,5 +1,6 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Home from "./components/home";
 import LandingPage from "./components/landing/LandingPage";
 import Register from "./components/auth/Register";
@@ -19,6 +20,14 @@ import ApplicationSuccess from "./components/applications/ApplicationSuccess";
 import NewAnnouncement from "./components/applications/NewAnnouncement";
 
 function App() {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    // Set initial direction based on language
+    document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = i18n.language;
+  }, [i18n.language]);
+  
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <div className="min-h-screen bg-background">

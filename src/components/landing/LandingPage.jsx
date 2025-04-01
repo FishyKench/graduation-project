@@ -4,25 +4,26 @@ import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const LandingPage = () => {
+  const { t } = useTranslation();
   const opportunities = [
     {
-      title: "Co-op Programs",
-      description:
-        "Gain practical experience through cooperative education programs",
+      title: t("services.coop.title"),
+      description: t("services.coop.desc"),
       image:
         "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&auto=format&fit=crop&q=60",
     },
     {
-      title: "High School Volunteering",
-      description: "Perfect for students looking to make a difference",
+      title: t("High School Volunteering"),
+      description: t("Perfect for students looking to make a difference"),
       image:
         "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&auto=format&fit=crop&q=60",
     },
     {
-      title: "Professional Training",
-      description: "Enhance your skills while helping others",
+      title: t("services.development.title"),
+      description: t("services.development.desc"),
       image:
         "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&auto=format&fit=crop&q=60",
     },
@@ -66,7 +67,7 @@ const LandingPage = () => {
           >
             <img
               src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=60"
-              alt="Training and Co-op Opportunities"
+              alt={t("Training and Co-op Opportunities")}
               className="w-full h-full object-cover"
             />
           </motion.div>
@@ -78,17 +79,16 @@ const LandingPage = () => {
               className="text-center text-white px-4"
             >
               <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                Make a Difference
+                 {t("hero.title")}
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">
-                Join our community of volunteers and create positive change in
-                Saudi Arabia
+                 {t("hero.subtitle")}
               </p>
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 rounded-lg text-lg"
                 onClick={() => (window.location.href = "/announcements")}
               >
-                Start Your Journey
+                {t("startJourney")}
               </Button>
             </motion.div>
           </div>
@@ -120,17 +120,13 @@ const LandingPage = () => {
             <motion.div variants={fadeIn}>
               <h2 className="text-4xl font-bold mb-6">Our Mission</h2>
               <p className="text-gray-600 text-lg leading-relaxed">
-                Volunect is dedicated to fostering meaningful connections
-                between organizations and volunteers. We believe in the power of
-                community service to transform both individuals and society.
+                {t("mission.text")}
               </p>
             </motion.div>
             <motion.div variants={fadeIn}>
-              <h2 className="text-4xl font-bold mb-6">Why Choose Us</h2>
+              <h2 className="text-4xl font-bold mb-6">{t("whyChoose.title")}</h2>
               <p className="text-gray-600 text-lg leading-relaxed">
-                We offer a diverse range of opportunities tailored to different
-                skills and interests. Our platform makes it easy to find and
-                apply for positions that match your passion.
+               {t("whyChoose.text")}
               </p>
             </motion.div>
           </motion.div>
@@ -149,7 +145,7 @@ const LandingPage = () => {
               variants={fadeIn}
               className="text-4xl font-bold text-center mb-16"
             >
-              Discover Opportunities
+              {t("discover.title")}
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
               {opportunities.map((opp, index) => (
@@ -173,7 +169,7 @@ const LandingPage = () => {
                       className="w-full hover:bg-purple-600 hover:text-white transition-colors"
                       onClick={() => (window.location.href = "/announcements")}
                     >
-                      Learn More
+                      {t("learnMore")}
                     </Button>
                   </div>
                 </motion.div>
@@ -192,27 +188,27 @@ const LandingPage = () => {
             className="max-w-7xl mx-auto text-center text-white"
           >
             <motion.h2 variants={fadeIn} className="text-4xl font-bold mb-6">
-              Ready to Make an Impact?
+             {t("impact.title")}
             </motion.h2>
             <motion.p
               variants={fadeIn}
               className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto"
             >
-              Join our growing community and start making a difference today
+              {t("impact.subtitle")}
             </motion.p>
             <motion.div variants={fadeIn} className="flex justify-center gap-4">
               <Button
                 className="bg-white text-purple-600 hover:bg-gray-100 px-8 py-6 text-lg"
                 onClick={() => (window.location.href = "/register")}
               >
-                Get Started
+                {t("getStarted")}
               </Button>
               <Button
                 variant="outline"
                 className="border-white text-purple-800 hover:bg-white/10 px-8 py-6 text-lg"
                 onClick={() => (window.location.href = "/contact")}
               >
-                Contact Us
+                {t("contactUs")}
               </Button>
             </motion.div>
           </motion.div>

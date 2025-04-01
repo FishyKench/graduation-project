@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import VolunteerForm from "./VolunteerForm";
 import OrganizationForm from "./OrganizationForm";
 import supabase from "../../../createClient"; // ✅ Import Supabase
+import { useTranslation } from "react-i18next";
 
 const Register = () => {
   const [userType, setUserType] = useState("volunteer");
@@ -12,6 +13,7 @@ const Register = () => {
   const [cities, setCities] = useState([]); // ✅ Fetch from DB
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // ✅ Fetch regions and cities from the database
   useEffect(() => {
@@ -106,8 +108,8 @@ const Register = () => {
       <main className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-[480px] bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">Create an Account</h2>
-            <p className="text-gray-500 mt-2">Join our community as a volunteer or organization</p>
+            <h2 className="text-2xl font-semibold text-gray-900">{t("createAccount")}</h2>
+            <p className="text-gray-500 mt-2">{t("joinCommunity")}</p>
           </div>
 
           <div className="flex gap-4 mb-8">
@@ -117,7 +119,7 @@ const Register = () => {
               }`}
               onClick={() => setUserType("volunteer")}
             >
-              Volunteer
+              {t("volunteer")}
             </button>
             <button
               className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
@@ -125,7 +127,7 @@ const Register = () => {
               }`}
               onClick={() => setUserType("organization")}
             >
-              Organization
+              {t("organization")}
             </button>
           </div>
 
@@ -140,9 +142,9 @@ const Register = () => {
           {message && <p className="text-red-500 mt-4 text-center">{message}</p>}
 
           <div className="mt-6 text-center text-sm text-gray-500">
-            <span>Already have an account? </span>
+            <span>{t("alreadyAccount")} </span>
             <a href="/login" className="text-purple-600 hover:text-purple-700 font-medium">
-              Sign in
+            {t("signIn")}
             </a>
           </div>
         </div>

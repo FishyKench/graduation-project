@@ -3,10 +3,12 @@ import { Button } from "../ui/button";
 import { Facebook, Twitter, Instagram } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,9 +26,9 @@ const Footer = () => {
   };
 
   const legalLinks = [
-    { label: "Privacy Policy", href: "/privacy" },
-    { label: "Terms of Service", href: "/terms" },
-    { label: "Contact Us", href: "/contact" },
+    { label: t("footer.privacy"), href: "/privacy" },
+    { label: t("footer.terms"), href: "/terms" },
+    { label: t("contact"), href: "/contact" },
   ];
 
   return (
@@ -41,7 +43,7 @@ const Footer = () => {
               className="text-purple-600 hover:text-purple-700 flex items-center gap-2"
               onClick={() => navigate("/register")}
             >
-              Become a Volunteer Today
+               {t("volunteer")}
             </Button>
           </div>
         )}

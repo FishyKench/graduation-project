@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import supabase from "../../createClient"; // ✅ Import Supabase
+import { useTranslation } from "react-i18next";
 
 const RegisterForm = ({ onSubmit = () => {} }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -48,13 +50,13 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            First Name <span className="text-red-500">*</span>
+            {t("settings.firstName")} <span className="text-red-500">*</span>
           </label>
           <Input name="firstName" value={formData.firstName} onChange={handleChange} required />
         </div>
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            Last Name <span className="text-red-500">*</span>
+          {t("settings.lastName")} <span className="text-red-500">*</span>
           </label>
           <Input name="lastName" value={formData.lastName} onChange={handleChange} required />
         </div>
@@ -62,20 +64,20 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Email <span className="text-red-500">*</span>
+        {t("email")} <span className="text-red-500">*</span>
         </label>
         <Input type="email" name="email" value={formData.email} onChange={handleChange} required />
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+        <label className="block text-sm font-medium text-gray-700">{t("profile.phone")}</label>
         <Input type="tel" name="phone" value={formData.phone} onChange={handleChange} required />
       </div>
 
       {/* ✅ Dynamically Loaded Regions */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Region <span className="text-red-500">*</span>
+        {t("settings.region")} <span className="text-red-500">*</span>
         </label>
         <select
           name="region"
@@ -84,9 +86,9 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
           required
           className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
         >
-          <option value="">Select a region</option>
+          <option value="">{t("settings.selectRegion")}</option>
           {loading ? (
-            <option>Loading...</option>
+            <option>{t("loading")}</option>
           ) : (
             regions.map((region) => (
               <option key={region.id} value={region.id}>
@@ -100,7 +102,7 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
       {/* ✅ Dynamically Loaded Cities */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          City <span className="text-red-500">*</span>
+        {t("settings.city")} <span className="text-red-500">*</span>
         </label>
         <select
           name="city"
@@ -109,7 +111,7 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
           required
           className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
         >
-          <option value="">Select a city</option>
+          <option value="">{t("settings.selectCity")}</option>
           {loading ? (
             <option>Loading...</option>
           ) : (
@@ -124,13 +126,13 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Age <span className="text-red-500">*</span>
+        {t("Age")}<span className="text-red-500">*</span>
         </label>
         <Input type="number" name="age" value={formData.age} onChange={handleChange} min="15" max="65" required />
       </div>
 
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white mt-6">
-        Verify Email
+      {t("Verify Email")}
       </Button>
     </form>
   );

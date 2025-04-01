@@ -17,6 +17,7 @@ import {
   DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   const navigate = useNavigate();
@@ -24,6 +25,13 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "Guest");
   const [userLevel, setUserLevel] = useState(localStorage.getItem("userLevel") || null);
   const [loading, setLoading] = useState(true);
+  const { t, i18n } = useTranslation();
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+    onLanguageChange(lng);
+    document.documentElement.dir = lng === "ar" ? "rtl" : "ltr";
+    document.documentElement.lang = lng;
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -95,28 +103,35 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
           <span className="text-xl font-semibold text-purple-600">Volunect</span>
         </div>
 
+        {/* Main Navigation */}
         <NavigationMenu className="hidden lg:flex flex-1 justify-center">
-          <NavigationMenuList className="flex items-center gap-2">
+          <NavigationMenuList
+            className={`flex items-center gap-2 ${i18n.language === "ar" ? "flex-row-reverse" : ""}`}
+          >
             <NavigationMenuItem>
-              <Button variant="ghost" onClick={() => navigate("/")}>Home</Button>
+              <Button variant="ghost" onClick={() => navigate("/")}>
+                {t("home")}
+              </Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Button variant="ghost" onClick={() => navigate("/about")}>About Us</Button>
+              <Button variant="ghost" onClick={() => navigate("/services")}>
+                {t("services")}
+              </Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Button variant="ghost" onClick={() => navigate("/services")}>Services</Button>
+              <Button variant="ghost" onClick={() => navigate("/about")}>
+                {t("aboutUs")}
+              </Button>
             </NavigationMenuItem>
-            {user && (
-              <NavigationMenuItem>
-                <AnnouncementsDropdown />
-              </NavigationMenuItem>
-            )}
+            <NavigationMenuItem>
+              <AnnouncementsDropdown />
+            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:flex items-center relative w-64">
-            <Input type="search" placeholder="Search..." className="pr-8" />
+            <Input type="search" placeholder={t("search")} className="pr-8" />
             <Search className="absolute right-2 h-4 w-4 text-gray-500" />
           </div>
 
@@ -137,30 +152,51 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
                 </DropdownMenuItem>
                 {userLevel === 1 && (
                   <DropdownMenuItem onClick={() => navigate("/applications/tracker")}>
-                    Application Tracker
+                    {t("applications")}
                   </DropdownMenuItem>
                 )}
                 {userLevel === 2 && (
                   <DropdownMenuItem onClick={() => navigate("/applications/manage")}>
-                    Manage Applications
+                    {t("admin.applications.title")}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => navigate("/settings")}>
-                  Settings
+                  {t("settings")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
-                  Log out
+                  {t("logOut")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <div className="hidden md:flex items-center gap-2">
-              <Button variant="ghost" className="text-purple-600" onClick={() => navigate("/login")}>Sign In</Button>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate("/register")}>Register</Button>
+              <Button variant="ghost" className="text-purple-600" onClick={() => navigate("/login")}>
+                {t("signIn")}
+              </Button>
+              <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate("/register")}>
+                {t("register")}
+              </Button>
             </div>
           )}
         </div>
+
+        {/* Language Selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <Globe className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => changeLanguage("en")}>
+              {t("english")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => changeLanguage("ar")}>
+              {t("arabic")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

@@ -3,12 +3,14 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import supabase from "../../../createClient"; // Go up 3 directories
+import { useTranslation } from "react-i18next";
 
 const LoginForm = ({ onSubmit = () => {} }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate(); // ✅ Initialize useNavigate
+  const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,7 +58,7 @@ const LoginForm = ({ onSubmit = () => {} }) => {
       </div>
 
       <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700">
-        Sign in
+      {t("signIn")}
       </Button>
     </form>
   );

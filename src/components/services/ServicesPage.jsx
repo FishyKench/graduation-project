@@ -3,55 +3,54 @@ import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { GraduationCap, Briefcase, Users, Award } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const ServicesPage = () => {
+  const { t } = useTranslation();
+
   const services = [
     {
-      title: "CO-OP Training",
-      description:
-        "Gain practical experience through our comprehensive CO-OP training programs",
+      title: t("services.coop.title"),
+      description: t("services.coop.desc"),
       icon: GraduationCap,
       features: [
-        "Hands-on industry experience",
-        "Professional mentorship",
-        "Skill development workshops",
-        "Project-based learning",
+        t("Hands-on industry experience"),
+        t("Professional mentorship"),
+        t("Skill development workshops"),
+        t("Project-based learning"),
       ],
     },
     {
-      title: "Internships",
-      description:
-        "Find the perfect internship opportunity to kickstart your career",
+      title: t("services.internships.title"),
+      description: t("services.internships.desc"),
       icon: Briefcase,
       features: [
-        "Diverse industry placements",
-        "Flexible duration options",
-        "Career guidance",
-        "Performance evaluation",
+        t("Diverse industry placements"),
+        t("Flexible duration options"),
+        t("Career guidance"),
+        t("Performance evaluation"),
       ],
     },
     {
-      title: "Volunteer Programs",
-      description:
-        "Make a difference in your community through meaningful volunteer work",
+      title: t("services.volunteer.title"),
+      description: t("services.volunteer.desc"),
       icon: Users,
       features: [
-        "Community impact projects",
-        "Flexible schedules",
-        "Team collaboration",
-        "Leadership opportunities",
+        t("Community impact projects"),
+        t("Flexible schedules"),
+        t("Team collaboration"),
+        t("Leadership opportunities"),
       ],
     },
     {
-      title: "Professional Development",
-      description:
-        "Enhance your skills with our professional development programs",
+      title: t("services.development.title"),
+      description: t("services.development.desc"),
       icon: Award,
       features: [
-        "Industry certifications",
-        "Soft skills training",
-        "Networking events",
-        "Career workshops",
+        t("Industry certifications"),
+        t("Soft skills training"),
+        t("Networking events"),
+        t("Career workshops"),
       ],
     },
   ];
@@ -65,11 +64,10 @@ const ServicesPage = () => {
         <div className="bg-purple-600 text-white py-20">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Our Services
+              {t("services.title")}
             </h1>
             <p className="text-xl text-purple-100 max-w-3xl mx-auto">
-              Comprehensive solutions for students and organizations to connect,
-              learn, and grow together
+            {t("services.subtitle")}
             </p>
           </div>
         </div>
@@ -101,23 +99,25 @@ const ServicesPage = () => {
         {/* CTA Section */}
         <section className="bg-gray-100 py-20 px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-6">Ready to Get Started?</h2>
+            <h2 className="text-3xl font-bold mb-6">
+              {t("services.cta.title")}
+              </h2>
             <p className="text-gray-600 mb-8 text-lg">
-              Join our platform and discover opportunities that match your goals
+                {t("services.cta.subtitle")}
             </p>
             <div className="flex justify-center gap-4">
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white px-8"
                 onClick={() => (window.location.href = "/register")}
               >
-                Register Now
+                {t("register")}
               </Button>
               <Button
                 variant="outline"
                 className="border-purple-600 text-purple-600 hover:bg-purple-50 px-8"
                 onClick={() => (window.location.href = "/contact")}
               >
-                Contact Us
+                {t("contact")}
               </Button>
             </div>
           </div>
