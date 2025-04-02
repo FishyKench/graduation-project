@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuList,
 } from "../ui/navigation-menu";
-import { Globe, Menu, Search } from "lucide-react";
+import { Globe, Menu } from "lucide-react";
 import AnnouncementsDropdown from "../announcements/AnnouncementsDropdown";
 import {
   DropdownMenu,
@@ -26,6 +25,7 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   const [userLevel, setUserLevel] = useState(localStorage.getItem("userLevel") || null);
   const [loading, setLoading] = useState(true);
   const { t, i18n } = useTranslation();
+
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
     onLanguageChange(lng);
@@ -130,10 +130,7 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
         </NavigationMenu>
 
         <div className="flex items-center gap-4">
-          <div className="hidden md:flex items-center relative w-64">
-            <Input type="search" placeholder={t("search")} className="pr-8" />
-            <Search className="absolute right-2 h-4 w-4 text-gray-500" />
-          </div>
+          {/* ✅ Removed search bar here */}
 
           {user ? (
             <DropdownMenu>

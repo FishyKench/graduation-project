@@ -5,9 +5,11 @@ import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import supabase from "../../../createClient";
 
 const LandingPage = () => {
   const { t } = useTranslation();
+
   const opportunities = [
     {
       title: t("services.coop.title"),
@@ -48,6 +50,17 @@ const LandingPage = () => {
     aboutSection?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleStartJourney = async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error || !data.user) {
+      // If not logged in, redirect to register
+      window.location.href = "/register";
+    } else {
+      // If logged in, redirect to announcements
+      window.location.href = "/announcements";
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -79,14 +92,14 @@ const LandingPage = () => {
               className="text-center text-white px-4"
             >
               <h1 className="text-5xl md:text-6xl font-bold mb-6">
-                 {t("hero.title")}
+                {t("hero.title")}
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl mx-auto">
-                 {t("hero.subtitle")}
+                {t("hero.subtitle")}
               </p>
               <Button
                 className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 rounded-lg text-lg"
-                onClick={() => (window.location.href = "/announcements")}
+                onClick={handleStartJourney}
               >
                 {t("startJourney")}
               </Button>
@@ -126,7 +139,7 @@ const LandingPage = () => {
             <motion.div variants={fadeIn}>
               <h2 className="text-4xl font-bold mb-6">{t("whyChoose.title")}</h2>
               <p className="text-gray-600 text-lg leading-relaxed">
-               {t("whyChoose.text")}
+                {t("whyChoose.text")}
               </p>
             </motion.div>
           </motion.div>
@@ -188,7 +201,7 @@ const LandingPage = () => {
             className="max-w-7xl mx-auto text-center text-white"
           >
             <motion.h2 variants={fadeIn} className="text-4xl font-bold mb-6">
-             {t("impact.title")}
+              {t("impact.title")}
             </motion.h2>
             <motion.p
               variants={fadeIn}

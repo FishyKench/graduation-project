@@ -74,15 +74,16 @@ const AnnouncementsPage = () => {
     .filter((announcement) => {
       const matchesType = selectedType === "all" || announcement.type === selectedType;
       const matchesDegree = selectedDegree === "all" || announcement.degree === selectedDegree;
-      const matchesSearch =
-        searchQuery === "" ||
-        announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        announcement.organization.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesPaid =
         selectedPaid === "all" ||
         (selectedPaid === "paid" && announcement.paid) ||
         (selectedPaid === "unpaid" && !announcement.paid);
-      return matchesType && matchesDegree && matchesSearch && matchesPaid;
+      const matchesSearch =
+        searchQuery === "" ||
+        announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (announcement.organization || "").toLowerCase().includes(searchQuery.toLowerCase());
+
+      return matchesType && matchesDegree && matchesPaid && matchesSearch;
     })
     .sort((a, b) => {
       let aScore = 0;
@@ -108,7 +109,7 @@ const AnnouncementsPage = () => {
         <div className="relative mb-6">
           <input
             type="text"
-            placeholder={t("search")}
+            placeholder={t("search") || "Search opportunities..."}
             className="w-full px-4 py-2 pl-10 pr-4 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
