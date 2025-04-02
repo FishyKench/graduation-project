@@ -10,17 +10,21 @@ import { Button } from "../ui/button";
 import { Megaphone, GraduationCap, School, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const AnnouncementsDropdown = () => {
   const navigate = useNavigate();
   const [selectedDegree, setSelectedDegree] = useState("all");
   const [announcements, setAnnouncements] = useState([]);
+  const { t, i18n } = useTranslation();
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
       const { data, error } = await supabase
         .from("announcements")
-        .select("id, title, degree, image_url, users!announcements_organization_id_fkey(fname)")
+        .select(
+          "id, title, degree, image_url, users!announcements_organization_id_fkey(fname)"
+        )
         .limit(9);
 
       if (!error) {
@@ -44,24 +48,30 @@ const AnnouncementsDropdown = () => {
   }
 
   const degreeFilters = [
-    { id: "all", label: "All Programs", icon: GraduationCap },
-    { id: "High School", label: "High School", icon: School },
-    { id: "Undergraduate", label: "Undergraduate", icon: BookOpen },
-    { id: "CO-OP", label: "CO-OP", icon: GraduationCap },
+    { id: "all", label: t("program.all"), icon: GraduationCap },
+    { id: "High School", label: t("program.highschool"), icon: School },
+    { id: "Undergraduate", label: t("program.undergraduate"), icon: BookOpen },
+    { id: "CO-OP", label: t("program.coop"), icon: GraduationCap },
   ];
+
+  const getTranslatedDegree = (degree) => {
+    if (!degree) return "";
+    const key = degree.replace(/\s+/g, "").toLowerCase(); // e.g., "High School" => "highschool"
+    return t(`program.${key}`);
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2">
           <Megaphone className="h-4 w-4" />
-          Announcements
+          {t("announcements")}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[350px] p-2">
         <div className="mb-2 p-2 bg-gray-50 rounded-md">
           <div className="text-sm font-medium text-gray-500 mb-2">
-            Filter by Program:
+            {t("filter.byProgram")}
           </div>
           <div className="flex gap-2 flex-wrap">
             {degreeFilters.map((filter) => (
@@ -70,7 +80,9 @@ const AnnouncementsDropdown = () => {
                 variant="ghost"
                 size="sm"
                 className={`flex items-center gap-1 px-2 py-1 ${
-                  selectedDegree === filter.id ? "bg-purple-100 text-purple-600" : ""
+                  selectedDegree === filter.id
+                    ? "bg-purple-100 text-purple-600"
+                    : ""
                 }`}
                 onClick={() => setSelectedDegree(filter.id)}
               >
@@ -101,17 +113,17 @@ const AnnouncementsDropdown = () => {
                     {announcement.title}
                   </div>
                   <div className="text-xs text-gray-500">
-                    {announcement.users?.fname || "Unknown Organization"}
+                    {announcement.users?.fname || t("profile.unknown")}
                   </div>
                   <div className="text-xs text-purple-600 mt-1 capitalize">
-                    {announcement.degree}
+                    {getTranslatedDegree(announcement.degree)}
                   </div>
                 </div>
               </DropdownMenuItem>
             ))
           ) : (
             <p className="text-center text-gray-500 text-sm py-2">
-              No announcements found.
+              {t("announcements.none")}
             </p>
           )}
         </div>
@@ -122,7 +134,7 @@ const AnnouncementsDropdown = () => {
           className="text-center text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
           onClick={() => navigate("/announcements")}
         >
-          View All Announcements
+          {t("announcements.viewAll")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

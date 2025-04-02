@@ -3,12 +3,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import { Button } from "../ui/button";
-import { Calendar, MapPin, GraduationCap, Building2, Clock } from "lucide-react";
+import { Calendar, MapPin, GraduationCap, Building2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import supabase from "../../../createClient";
 
 const OpportunityDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [opportunity, setOpportunity] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alreadyApplied, setAlreadyApplied] = useState(false);
@@ -32,10 +35,7 @@ const OpportunityDetails = () => {
         .eq("id", id)
         .single();
 
-      if (error) {
-        console.error("❌ Error fetching opportunity:", error.message);
-      } else {
-        console.log("✅ Fetched opportunity:", data);
+      if (!error) {
         setOpportunity(data);
       }
 
@@ -56,13 +56,13 @@ const OpportunityDetails = () => {
       if (storedLevel) {
         setUserLevel(parseInt(storedLevel));
       } else {
-        const { data: userData, error: userError } = await supabase
+        const { data: userData } = await supabase
           .from("users")
           .select("level")
           .eq("id", authData.user.id)
           .single();
 
-        if (!userError && userData) {
+        if (userData) {
           setUserLevel(userData.level);
           localStorage.setItem("userLevel", userData.level);
         }
@@ -70,9 +70,7 @@ const OpportunityDetails = () => {
 
       if (!opportunity) return;
 
-      // Check if the application is stored locally to improve speed
       const localApplied = localStorage.getItem(`applied_${authData.user.id}_${id}`);
-
       if (localApplied) {
         const { data, error } = await supabase
           .from("applications")
@@ -80,7 +78,7 @@ const OpportunityDetails = () => {
           .eq("user_id", authData.user.id)
           .eq("announcement_id", id)
           .single();
-      
+
         if (!error && data) {
           setAlreadyApplied(true);
         } else {
@@ -90,14 +88,14 @@ const OpportunityDetails = () => {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("applications")
         .select("id")
         .eq("user_id", authData.user.id)
         .eq("announcement_id", id)
         .single();
 
-      if (!error && data) {
+      if (data) {
         setAlreadyApplied(true);
         localStorage.setItem(`applied_${authData.user.id}_${id}`, "true");
       } else {
@@ -113,22 +111,11 @@ const OpportunityDetails = () => {
   const handleApply = async () => {
     if (!user || !opportunity || userLevel === 2 || alreadyApplied) return;
 
-    // Double-check using localStorage to ensure no duplicate submissions
     const localApplied = localStorage.getItem(`applied_${user.id}_${id}`);
-    if (localApplied) {
-      console.warn("🚫 Already applied, ignoring click.");
-      return;
-    }
+    if (localApplied) return;
 
-    // Mark as applied instantly and store locally
     setAlreadyApplied(true);
     localStorage.setItem(`applied_${user.id}_${id}`, "true");
-
-    console.log("🔎 Debugging Application Submission:", {
-      user_id: user.id,
-      organization_id: opportunity.organization_id,
-      announcement_id: opportunity.id,
-    });
 
     const { error } = await supabase.from("applications").insert([
       {
@@ -141,8 +128,6 @@ const OpportunityDetails = () => {
     ]);
 
     if (error) {
-      console.error("❌ Error submitting application:", error.message);
-      // Rollback in case of error
       setAlreadyApplied(false);
       localStorage.removeItem(`applied_${user.id}_${id}`);
     } else {
@@ -153,7 +138,7 @@ const OpportunityDetails = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Loading opportunity details...</p>
+        <p>{t("loading")}</p>
       </div>
     );
   }
@@ -161,7 +146,7 @@ const OpportunityDetails = () => {
   if (!opportunity) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>Opportunity not found.</p>
+        <p>{t("opportunities.details.notfound")}</p>
       </div>
     );
   }
@@ -190,20 +175,16 @@ const OpportunityDetails = () => {
                 <div className="flex items-center gap-2">
                   <Building2 className="w-5 h-5 text-gray-500" />
                   <span className="text-sm text-gray-600">
-                    {opportunity.users?.fname || "Unknown Organization"}
+                    {opportunity.users?.fname || t("profile.org.details")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-gray-500" />
-                  <span className="text-sm text-gray-600">
-                    {opportunity.location}
-                  </span>
+                  <span className="text-sm text-gray-600">{opportunity.location}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <GraduationCap className="w-5 h-5 text-gray-500" />
-                  <span className="text-sm text-gray-600 capitalize">
-                    {opportunity.degree}
-                  </span>
+                  <span className="text-sm text-gray-600 capitalize">{opportunity.degree}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-gray-500" />
@@ -213,24 +194,24 @@ const OpportunityDetails = () => {
                 </div>
               </div>
 
-              {/* ✅ Compensation and Hours Section */}
               <div>
-                <h2 className="text-xl font-semibold mb-3">Compensation</h2>
+                <h2 className="text-xl font-semibold mb-3">{t("opportunities.details.compensation")}</h2>
                 <p className="text-gray-600">
                   {opportunity.paid === true || opportunity.paid === "paid"
-                    ? `💰 Paid - Salary: ${opportunity.salary ? `${opportunity.salary} SAR` : "Salary Not Specified"}`
-                    : "Unpaid"}
+                    ? `💰 ${t("opportunities.details.paid")} - ${
+                        opportunity.salary ? `${opportunity.salary} SAR` : t("opportunities.details.salaryNotSpecified")
+                      }`
+                    : t("opportunities.details.unpaid")}
                 </p>
                 <p className="text-gray-600">
-                  🕒 Hours: {opportunity.hours ? `${opportunity.hours} hours` : "Not specified"}
+                  🕒 {t("opportunities.details.hours")}:{" "}
+                  {opportunity.hours ? `${opportunity.hours} ${t("dashboard.stats.hours")}` : t("opportunities.details.notSpecified")}
                 </p>
               </div>
 
               <div>
-                <h2 className="text-xl font-semibold mb-3">Description</h2>
-                <p className="text-gray-600">
-                  {opportunity.description || "No description available."}
-                </p>
+                <h2 className="text-xl font-semibold mb-3">{t("opportunities.details.description")}</h2>
+                <p className="text-gray-600">{opportunity.description || t("opportunities.details.noDescription")}</p>
               </div>
 
               <div className="flex justify-center pt-4">
@@ -244,10 +225,10 @@ const OpportunityDetails = () => {
                   }`}
                 >
                   {alreadyApplied
-                    ? "Already Applied"
+                    ? t("opportunities.details.alreadyApplied")
                     : userLevel === 2
-                    ? "Organizations Can't Apply"
-                    : "Apply Now"}
+                    ? t("opportunities.details.orgCantApply")
+                    : t("opportunities.details.apply")}
                 </Button>
               </div>
             </div>

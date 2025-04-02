@@ -265,6 +265,66 @@ i18n
           "dashboard.projects.title": "Recent Projects",
           "dashboard.achievements.title": "Achievements",
 
+          //AnnouncementDropDownMenu
+
+          "filter.byProgram": "Filter by Program:",
+          "program.all": "All Programs",
+          "program.highschool": "High School",
+          "program.undergraduate": "Undergraduate",
+          "program.coop": "CO-OP",
+          "announcements.none": "No announcements found.",
+          "announcements.viewAll": "View All Announcements",
+
+          //Announcement Page
+
+          "search": "Search opportunities...",
+          "opportunities.title": "Opportunities",
+          "opportunities.none": "No opportunities found.",
+          "opportunities.paid": "💰 Paid",
+          "opportunities.unpaid": "Unpaid",
+          "opportunities.salary.notSpecified": "Amount Not Specified",
+          "opportunities.hours": "Hours Offered",
+          "opportunities.hours.notSpecified": "Not specified",
+          "opportunities.details.learnMore": "Learn More",
+
+          "opportunities.filter.byType": "Filter by Type",
+          "opportunities.filter.byDegree": "Filter by Program",
+          "opportunities.filter.byPaid": "Filter by Payment",
+          "opportunities.filter.type.all": "All Opportunities",
+          "opportunities.filter.type.internship": "Internships",
+          "opportunities.filter.type.volunteer": "Volunteer",
+          "opportunities.filter.paid.all": "All",
+          "opportunities.filter.paid.paid": "Paid",
+          "opportunities.filter.paid.unpaid": "Unpaid",
+
+          "opportunities.type.internship": "Internship",
+          "opportunities.type.volunteer": "Volunteer",
+
+          "program.all": "All Programs",
+          "program.highschool": "High School",
+          "program.undergraduate": "Undergraduate",
+          "program.coop": "CO-OP",
+
+
+
+          //Opportunity Page
+
+
+          "opportunities.details.notfound": "Opportunity not found.",
+          "opportunities.details.compensation": "Compensation",
+          "opportunities.details.paid": "Paid",
+          "opportunities.details.unpaid": "Unpaid",
+          "opportunities.details.salary.notSpecified": "Salary Not Specified",
+          "opportunities.details.hours": "Hours",
+          "opportunities.details.hours.notSpecified": "Not specified",
+          "opportunities.details.description": "Description",
+          "opportunities.details.description.empty": "No description available.",
+          "opportunities.details.apply": "Apply Now",
+          "opportunities.details.alreadyApplied": "Already Applied",
+          "opportunities.details.orgCantApply": "Organizations Can't Apply",
+
+
+
           // Settings
           "settings.title": "Settings",
           "settings.profile": "Profile Settings",
@@ -521,6 +581,7 @@ i18n
           "profile.services": "الخدمات المقدمة",
           "profile.cv": "السيرة الذاتية",
           "profile.contact": "معلومات الاتصال",
+          "profile.interest": "الاهتمامات",
           "profile.contact.button": "تواصل للفرص",
 
           // Applications
@@ -548,6 +609,64 @@ i18n
           "dashboard.stats.impacted": "الأشخاص المتأثرين",
           "dashboard.projects.title": "المشاريع الأخيرة",
           "dashboard.achievements.title": "الإنجازات",
+
+          //AnnouncementDropDownMenu
+
+          "filter.byProgram": "تصفية حسب البرنامج:",
+          "program.all": "جميع البرامج",
+          "program.highschool": "الثانوية العامة",
+          "program.undergraduate": "البكالوريوس",
+          "program.coop": "التدريب التعاوني",
+          "announcements.none": "لم يتم العثور على إعلانات.",
+          "announcements.viewAll": "عرض جميع الإعلانات",
+
+
+          //Announcement Page
+          "search": "ابحث عن الفرص...",
+          "opportunities.title": "الفرص",
+          "opportunities.none": "لم يتم العثور على فرص.",
+          "opportunities.paid": "💰 مدفوعة",
+          "opportunities.unpaid": "غير مدفوعة",
+          "opportunities.salary.notSpecified": "المبلغ غير محدد",
+          "opportunities.hours": "عدد الساعات",
+          "opportunities.hours.notSpecified": "غير محدد",
+          "opportunities.details.learnMore": "عرض المزيد",
+
+          "opportunities.filter.byType": "تصفية حسب النوع",
+          "opportunities.filter.byDegree": "تصفية حسب البرنامج",
+          "opportunities.filter.byPaid": "تصفية حسب الدفع",
+          "opportunities.filter.type.all": "جميع الفرص",
+          "opportunities.filter.type.internship": "التدريب",
+          "opportunities.filter.type.volunteer": "التطوع",
+          "opportunities.filter.paid.all": "الكل",
+          "opportunities.filter.paid.paid": "مدفوعة",
+          "opportunities.filter.paid.unpaid": "غير مدفوعة",
+
+          "opportunities.type.internship": "تدريب",
+          "opportunities.type.volunteer": "تطوع",
+
+          "program.all": "جميع البرامج",
+          "program.highschool": "الثانوية العامة",
+          "program.undergraduate": "البكالوريوس",
+          "program.coop": "التدريب التعاوني",
+
+
+
+          //Opportunity Page
+          "opportunities.details.notfound": "لم يتم العثور على الفرصة.",
+          "opportunities.details.compensation": "التعويض",
+          "opportunities.details.paid": "مدفوعة",
+          "opportunities.details.unpaid": "غير مدفوعة",
+          "opportunities.details.salary.notSpecified": "الراتب غير محدد",
+          "opportunities.details.hours": "عدد الساعات",
+          "opportunities.details.hours.notSpecified": "غير محدد",
+          "opportunities.details.description": "الوصف",
+          "opportunities.details.description.empty": "لا يوجد وصف متاح.",
+          "opportunities.details.apply": "تقدَّم الآن",
+          "opportunities.details.alreadyApplied": "تم التقديم مسبقًا",
+          "opportunities.details.orgCantApply": "المنظمات لا يمكنها التقديم",
+
+
 
           // Settings
           "settings.title": "الإعدادات",

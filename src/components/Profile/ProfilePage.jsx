@@ -3,11 +3,14 @@ import { useParams } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.language === "ar";
 
   // Fetch profile data from Supabase
   useEffect(() => {
@@ -81,8 +84,11 @@ const ProfilePage = () => {
               <p className="text-gray-500">{displayProfile.phone_number}</p>
               {/* Volunteer Hours Badge */}
               {displayProfile.volunteer_hours >= 0 && (
-                <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">
-                  <span className="mr-1">
+                <div
+                  className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 ${isArabic ? "flex-row-reverse" : ""
+                    }`}
+                >
+                  <span className={`mx-1 ${isArabic ? "ml-2" : "mr-1"}`}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4"
@@ -98,7 +104,11 @@ const ProfilePage = () => {
                       />
                     </svg>
                   </span>
-                  {displayProfile.volunteer_hours} volunteer hours
+                  <span>
+                    {isArabic
+                      ? `${t("dashboard.stats.hours")} ${displayProfile.volunteer_hours}`
+                      : `${displayProfile.volunteer_hours} ${t("dashboard.stats.hours")}`}
+                  </span>
                 </div>
               )}
             </div>
@@ -107,33 +117,33 @@ const ProfilePage = () => {
           {/* Description Section */}
           {displayProfile.description && (
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h2 className="text-lg font-medium mb-2">About</h2>
+              <h2 className="text-lg font-medium mb-2">{t("profile.about")}</h2>
               <p className="text-gray-700">{displayProfile.description}</p>
             </div>
           )}
 
           <div className="space-y-6">
             <div>
-              <h2 className="text-lg font-medium mb-2">Personal Details</h2>
+              <h2 className="text-lg font-medium mb-2">{t("profile.details")}</h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-500">Full Name</label>
+                  <label className="text-sm text-gray-500">{t("profile.fullName")}</label>
                   <p>{`${displayProfile.fname} ${displayProfile.mname} ${displayProfile.lname}`}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Age</label>
+                  <label className="text-sm text-gray-500">{t("profile.age")}</label>
                   <p>{displayProfile.age || "Not specified"}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Gender</label>
+                  <label className="text-sm text-gray-500">{t("profile.gender")}</label>
                   <p>{displayProfile.gender || "Not specified"}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Degree</label>
+                  <label className="text-sm text-gray-500">{t("profile.degree")}</label>
                   <p>{displayProfile.degree || "Not specified"}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-gray-500">Location</label>
+                  <label className="text-sm text-gray-500">{t("profile.location")}</label>
                   <p>
                     {displayProfile.cities?.regions?.name || "Unknown"}, {displayProfile.cities?.name || "Unknown"}
                   </p>
@@ -144,7 +154,7 @@ const ProfilePage = () => {
             {/* CV Link (Only Show If Available) */}
             {displayProfile.cv && (
               <div>
-                <h2 className="text-lg font-medium mb-2">CV</h2>
+                <h2 className="text-lg font-medium mb-2">{t("profile.cv")}</h2>
                 <a
                   href={displayProfile.cv}
                   target="_blank"
@@ -156,17 +166,17 @@ const ProfilePage = () => {
               </div>
             )}
 
-                      {/* Interest Section */}
-          {displayProfile.interest && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h2 className="text-lg font-medium mb-2">Interests</h2>
-              <p className="text-gray-700">{displayProfile.interest}</p>
-            </div>
-          )}
+            {/* Interest Section */}
+            {displayProfile.interest && (
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h2 className="text-lg font-medium mb-2">{t("profile.interest")}</h2>
+                <p className="text-gray-700">{displayProfile.interest}</p>
+              </div>
+            )}
 
             {/* Contact Information Section */}
             <div>
-              <h2 className="text-lg font-medium mb-2">Contact Information</h2>
+              <h2 className="text-lg font-medium mb-2">{t("profile.contact")}</h2>
               <div className="space-y-2">
                 <div className="flex items-center">
                   <span className="text-gray-500 mr-2">
