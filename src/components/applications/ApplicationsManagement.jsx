@@ -5,8 +5,10 @@ import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
 import { Button } from "../ui/button";
 import { ArrowLeft, ClipboardList, PlusCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const ApplicationsManagement = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [announcements, setAnnouncements] = useState([]);
   const [applications, setApplications] = useState([]);
@@ -17,16 +19,13 @@ const ApplicationsManagement = () => {
   useEffect(() => {
     const fetchAnnouncements = async () => {
       setLoading(true);
-
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) {
-        console.error("❌ Authentication error:", authError?.message);
         setLoading(false);
         return;
       }
 
       const userId = authData.user.id;
-
       const { data, error } = await supabase
         .from("announcements")
         .select("id, title, created_at, hours")
@@ -66,9 +65,7 @@ const ApplicationsManagement = () => {
 
     if (!error) {
       setApplications((prev) =>
-        prev.map((app) =>
-          app.id === appId ? { ...app, status: newStatus } : app
-        )
+        prev.map((app) => (app.id === appId ? { ...app, status: newStatus } : app))
       );
 
       if (newStatus === "approved") {
@@ -135,19 +132,19 @@ const ApplicationsManagement = () => {
               <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-800 flex items-center gap-2">
                   <ClipboardList className="w-6 h-6 text-blue-600" />
-                  Your Announcements
+                  {t("admin.applications.title")}
                 </h1>
                 <Button
                   className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
                   onClick={() => navigate("/applications/new")}
                 >
                   <PlusCircle className="w-4 h-4" />
-                  Add Announcement
+                  {t("admin.applications.new")}
                 </Button>
               </div>
 
               {loading ? (
-                <p className="text-center py-4 text-gray-600">Loading...</p>
+                <p className="text-center py-4 text-gray-600">{t("loading")}</p>
               ) : (
                 <div className="grid gap-4">
                   {announcements.map((announcement) => (
@@ -163,14 +160,15 @@ const ApplicationsManagement = () => {
                           {announcement.title}
                         </button>
                         <p className="text-sm text-gray-600">
-                          Posted: {new Date(announcement.created_at).toLocaleDateString()}
+                          {t("applications.details.date")}:{" "}
+                          {new Date(announcement.created_at).toLocaleDateString()}
                         </p>
                       </div>
                       <Button
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
                         onClick={() => fetchApplications(announcement.id)}
                       >
-                        View Applications
+                        {t("admin.applications.view")}
                       </Button>
                     </div>
                   ))}
@@ -183,13 +181,13 @@ const ApplicationsManagement = () => {
                 className="mb-6 flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
                 onClick={() => setSelectedAnnouncement(null)}
               >
-                <ArrowLeft className="w-4 h-4" /> Back to Announcements
+                <ArrowLeft className="w-4 h-4" /> {t("admin.applications.back")}
               </Button>
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">Volunteer Applications</h2>
+              <h2 className="text-2xl font-bold mb-4 text-gray-800">{t("applications.title")}</h2>
               {loading ? (
-                <p className="text-center py-4 text-gray-600">Loading...</p>
+                <p className="text-center py-4 text-gray-600">{t("loading")}</p>
               ) : applications.length === 0 ? (
-                <p className="text-center py-4 text-gray-600">No applications found.</p>
+                <p className="text-center py-4 text-gray-600">{t("applications.none")}</p>
               ) : (
                 <ul className="space-y-4">
                   {applications.map((app) => (
@@ -202,19 +200,17 @@ const ApplicationsManagement = () => {
                           {app.users?.fname} {app.users?.mname} {app.users?.lname}
                         </button>
                         <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusClass(
-                            app.status
-                          )}`}
+                          className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusClass(app.status)}`}
                         >
-                          {app.status}
+                          {t(`applications.status.${app.status}`)}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">
-                        Gender: {app.users?.gender || "N/A"} | Age: {app.users?.age || "N/A"}
+                        {t("profile.gender")}: {app.users?.gender || "N/A"} | {t("profile.age")}: {app.users?.age || "N/A"}
                       </p>
-                      <p className="text-sm text-gray-600">Degree: {app.users?.degree}</p>
+                      <p className="text-sm text-gray-600">{t("profile.degree")}: {app.users?.degree}</p>
                       <p className="text-sm text-gray-600">
-                        Location: {app.users?.cities?.regions?.name}, {app.users?.cities?.name}
+                        {t("profile.location")}: {app.users?.cities?.regions?.name}, {app.users?.cities?.name}
                       </p>
                       {app.users?.cv && (
                         <a
@@ -223,7 +219,7 @@ const ApplicationsManagement = () => {
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:underline text-sm block mt-2"
                         >
-                          View CV
+                          {t("profile.cv")}
                         </a>
                       )}
 
@@ -254,10 +250,12 @@ const ApplicationsManagement = () => {
                                   confirmHours(app.id, confirmedHours[app.id] ?? getAnnouncementHours())
                                 }
                               >
-                                Confirm
+                                {t("admin.applications.confirm")}
                               </Button>
                             ) : (
-                              <span className="text-green-700 text-sm font-medium">✔ Confirmed</span>
+                              <span className="text-green-700 text-sm font-medium">
+                                ✔ {t("admin.applications.confirmed")}
+                              </span>
                             )}
                           </>
                         )}
@@ -268,13 +266,13 @@ const ApplicationsManagement = () => {
                               className="bg-green-600 hover:bg-green-700 text-white"
                               onClick={() => updateApplicationStatus(app.id, "approved")}
                             >
-                              Approve
+                              {t("admin.applications.approve")}
                             </Button>
                             <Button
                               className="bg-red-600 hover:bg-red-700 text-white"
                               onClick={() => updateApplicationStatus(app.id, "rejected")}
                             >
-                              Reject
+                              {t("admin.applications.reject")}
                             </Button>
                           </>
                         )}

@@ -3,8 +3,10 @@ import { useParams } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const SettingsPage = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -84,18 +86,18 @@ const SettingsPage = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>{t("loading")}</p>;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6">Settings</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t("settings.title")}</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block font-medium">Email</label>
+              <label className="block font-medium">{t("email")}</label>
               <input
                 className="w-full p-2 border rounded"
                 type="email"
@@ -107,7 +109,7 @@ const SettingsPage = () => {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block font-medium">First Name</label>
+                <label className="block font-medium">{t("settings.firstName")}</label>
                 <input
                   className="w-full p-2 border rounded"
                   type="text"
@@ -117,7 +119,7 @@ const SettingsPage = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">Middle Name</label>
+                <label className="block font-medium">{t("settings.middleName")}</label>
                 <input
                   className="w-full p-2 border rounded"
                   type="text"
@@ -127,7 +129,7 @@ const SettingsPage = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">Last Name</label>
+                <label className="block font-medium">{t("settings.lastName")}</label>
                 <input
                   className="w-full p-2 border rounded"
                   type="text"
@@ -139,7 +141,7 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">Phone Number</label>
+              <label className="block font-medium">{t("settings.phone")}</label>
               <input
                 className="w-full p-2 border rounded"
                 type="text"
@@ -150,7 +152,7 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">Gender</label>
+              <label className="block font-medium">{t("profile.gender")}</label>
               <select
                 name="gender"
                 value={formData.gender}
@@ -158,63 +160,64 @@ const SettingsPage = () => {
                 required
                 className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               >
-                <option value="">Select your gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="">{t("settings.selectGender")}</option>
+                <option value="male">{t("gender.male")}</option>
+                <option value="female">{t("gender.female")}</option>
+                <option value="prefer_not_to_say">{t("gender.prefernottosay")}</option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block font-medium">Region</label>
+                <label className="block font-medium">{t("settings.region")}</label>
                 <select
                   className="w-full p-2 border rounded"
                   name="region"
                   value={formData.region}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select a region</option>
-                  <option value="1">Eastern Province</option>
-                  <option value="2">Riyadh Province</option>
-                  <option value="3">Makkah Province</option>
-                  <option value="4">Madinah Province</option>
+                  <option value="">{t("settings.selectRegion")}</option>
+                  <option value="1">{t("Eastern Province")}</option>
+                  <option value="2">{t("Riyadh Province")}</option>
+                  <option value="3">{t("Makkah Province")}</option>
+                  <option value="4">{t("Madinah Province")}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-medium">City</label>
+                <label className="block font-medium">{t("settings.city")}</label>
                 <select
                   className="w-full p-2 border rounded"
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
                 >
-                  <option value="">Select a city</option>
-                  <option value="1">Dammam</option>
-                  <option value="2">Riyadh</option>
-                  <option value="3">Jeddah</option>
-                  <option value="4">Medina</option>
+                  <option value="">{t("settings.selectCity")}</option>
+                  <option value="1">{t("Dammam")}</option>
+                  <option value="2">{t("Riyadh")}</option>
+                  <option value="3">{t("Jeddah")}</option>
+                  <option value="4">{t("Medina")}</option>
                 </select>
               </div>
             </div>
 
             <div>
-              <label className="block font-medium">Degree</label>
+              <label className="block font-medium">{t("settings.degree")}</label>
               <select
                 className="w-full p-2 border rounded"
                 name="degree"
                 value={formData.degree}
                 onChange={handleInputChange}
               >
-                <option value="">Select your degree</option>
-                <option value="High School">High School</option>
-                <option value="CO-OP">CO-OP</option>
-                <option value="Undergraduate">Undergraduate</option>
+                <option value="">{t("settings.selectDegree")}</option>
+                <option value="High School">{t("program.highschool")}</option>
+                <option value="CO-OP">{t("program.coop")}</option>
+                <option value="Undergraduate">{t("program.undergraduate")}</option>
               </select>
             </div>
 
             <div>
-              <label className="block font-medium">CV Link</label>
+              <label className="block font-medium">{t("settings.cvLink")}</label>
               <input
                 className="w-full p-2 border rounded"
                 type="url"
@@ -225,7 +228,7 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">Description</label>
+              <label className="block font-medium">{t("settings.about")}</label>
               <textarea
                 className="w-full p-2 border rounded"
                 name="description"
@@ -235,12 +238,13 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">Interest</label>
+              <label className="block font-medium">{t("settings.services")}</label>
               <textarea
                 className="w-full p-2 border rounded"
                 name="interest"
                 value={formData.interest}
                 onChange={handleInputChange}
+                placeholder={t("settings.services.desc")}
               />
             </div>
 
@@ -248,7 +252,7 @@ const SettingsPage = () => {
               className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               onClick={handleSave}
             >
-              Save Changes
+              {t("save")}
             </button>
           </div>
         </div>

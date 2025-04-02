@@ -241,20 +241,44 @@ i18n
 
           // Applications
           "applications.title": "Your Applications",
-          "applications.new": "New Application",
+          "applications.details": "Announcement",
+          "applications.org": "Organization",
           "applications.status": "Status",
-          "applications.actions": "Actions",
-          "applications.details": "Details",
+          "applications.submittedOn": "Date",
+          "applications.none": "No applications found.",
+          "applications.status.pending": "Pending",
+          "applications.status.approved": "Approved",
+          "applications.status.rejected": "Rejected",
+          "applications.status.unknown": "Unknown",
+
+          //Application Success
+
+          "application.success.title": "Thank You!",
+          "application.success.message": "Your application has been submitted successfully.",
+          "application.success.check": "You can check your application status in your profile under",
+          "application.success.statusLink": "Application Status",
+          "application.success.view": "View My Applications",
+          "application.success.explore": "Explore More Opportunities",
+
 
           // Admin
+
           "admin.applications.title": "Manage Applications",
-          "admin.applications.organization": "Organization",
-          "admin.applications.title.column": "Title",
-          "admin.applications.program": "Program Type",
-          "admin.applications.status": "Status",
-          "admin.applications.actions": "Actions",
+          "admin.applications.new": "Add Announcement",
+          "admin.applications.view": "View Applications",
+          "admin.applications.back": "Back to Announcements",
           "admin.applications.approve": "Approve",
           "admin.applications.reject": "Reject",
+          "admin.applications.confirm": "Confirm",
+          "admin.applications.confirmed": "Confirmed",
+          "applications.title": "Volunteer Applications",
+          "applications.none": "No applications found.",
+          "applications.status.pending": "Pending",
+          "applications.status.approved": "Approved",
+          "applications.status.rejected": "Rejected",
+          "applications.details.date": "Posted",
+
+
 
           // Dashboard
           "dashboard.title": "Impact Dashboard",
@@ -325,6 +349,34 @@ i18n
 
 
 
+          //AnnouncementForm
+
+          "announcementForm.title": "New Announcement",
+          "announcementForm.type": "Opportunity Type",
+          "announcementForm.type.volunteer": "Volunteer",
+          "announcementForm.type.internship": "Internship",
+          "announcementForm.name": "Opportunity Title",
+          "announcementForm.degree": "Required Degree",
+          "announcementForm.degree.highschool": "High School",
+          "announcementForm.degree.undergraduate": "Undergraduate",
+          "announcementForm.degree.coop": "CO-OP",
+          "announcementForm.location": "Location",
+          "announcementForm.deadline": "Deadline",
+          "announcementForm.picture": "Picture URL",
+          "announcementForm.paid": "Is this a paid opportunity?",
+          "announcementForm.unpaid": "Unpaid",
+          "announcementForm.salary": "Salary (per month)",
+          "announcementForm.salary.placeholder": "Enter salary amount",
+          "announcementForm.description": "Description",
+          "announcementForm.description.placeholder": "Enter a description...",
+          "announcementForm.hours.placeholder": "Enter the number of volunteer hours",
+          "announcementForm.cancel": "Cancel",
+          "announcementForm.submit": "Submit",
+          "announcementForm.hours": "Volunteer Hours",
+
+
+
+
           // Settings
           "settings.title": "Settings",
           "settings.profile": "Profile Settings",
@@ -354,6 +406,8 @@ i18n
           "gender.male": "Male",
           "gender.female": "Female",
           "gender.prefernottosay": "Prefer not to say",
+          "settings.phone": "Phone Number",
+          "settings.degree": "Degree",
         },
       },
       ar: {
@@ -586,20 +640,49 @@ i18n
 
           // Applications
           "applications.title": "طلباتك",
-          "applications.new": "طلب جديد",
+          "applications.details": "الإعلان",
+          "applications.org": "المنظمة",
           "applications.status": "الحالة",
-          "applications.actions": "الإجراءات",
-          "applications.details": "التفاصيل",
+          "applications.submittedOn": "التاريخ",
+          "applications.none": "لم يتم العثور على طلبات.",
+          "applications.status.pending": "قيد المراجعة",
+          "applications.status.approved": "مقبول",
+          "applications.status.rejected": "مرفوض",
+          "applications.status.unknown": "غير معروف",
+
+          //Application Success
+
+          "application.success.title": "🎉 شكرًا لك!",
+          "application.success.message": "تم تقديم طلبك بنجاح.",
+          "application.success.check": "يمكنك متابعة حالة الطلب في ملفك الشخصي ضمن",
+          "application.success.statusLink": "حالة الطلبات",
+          "application.success.view": "عرض طلباتي",
+          "application.success.explore": "استكشاف المزيد من الفرص",
+
+
+
 
           // Admin
+
+
           "admin.applications.title": "إدارة الطلبات",
-          "admin.applications.organization": "المنظمة",
-          "admin.applications.title.column": "العنوان",
-          "admin.applications.program": "نوع البرنامج",
-          "admin.applications.status": "الحالة",
-          "admin.applications.actions": "الإجراءات",
+          "admin.applications.new": "إضافة إعلان",
+          "admin.applications.view": "عرض الطلبات",
+          "admin.applications.back": "العودة للإعلانات",
           "admin.applications.approve": "موافقة",
           "admin.applications.reject": "رفض",
+          "admin.applications.confirm": "تأكيد",
+          "admin.applications.confirmed": "تم التأكيد",
+          "applications.title": "طلبات المتطوعين",
+          "applications.none": "لا توجد طلبات.",
+          "applications.status.pending": "قيد المراجعة",
+          "applications.status.approved": "تمت الموافقة",
+          "applications.status.rejected": "مرفوض",
+          "applications.details.date": "تاريخ النشر",
+
+
+
+
 
           // Dashboard
           "dashboard.title": "لوحة تأثير",
@@ -651,6 +734,33 @@ i18n
           "program.coop": "التدريب التعاوني",
 
 
+          //AnnouncementForm
+
+          "announcementForm.title": "إعلان جديد",
+          "announcementForm.type": "نوع الفرصة",
+          "announcementForm.type.volunteer": "تطوع",
+          "announcementForm.type.internship": "تدريب",
+          "announcementForm.name": "عنوان الفرصة",
+          "announcementForm.degree": "المؤهل المطلوب",
+          "announcementForm.degree.highschool": "الثانوية العامة",
+          "announcementForm.degree.undergraduate": "البكالوريوس",
+          "announcementForm.degree.coop": "التدريب التعاوني",
+          "announcementForm.location": "الموقع",
+          "announcementForm.deadline": "الموعد النهائي",
+          "announcementForm.picture": "رابط الصورة",
+          "announcementForm.paid": "مدفوعة",
+          "announcementForm.unpaid": "غير مدفوعة",
+          "announcementForm.salary": "الراتب (شهريًا)",
+          "announcementForm.salary.placeholder": "أدخل مبلغ الراتب",
+          "announcementForm.description": "الوصف",
+          "announcementForm.description.placeholder": "أدخل وصفًا...",
+          "announcementForm.cancel": "إلغاء",
+          "announcementForm.submit": "إرسال",
+          "announcementForm.hours": "عدد ساعات التطوع",
+          "announcementForm.hours.placeholder": "أدخل عدد ساعات التطوع",
+
+
+
 
           //Opportunity Page
           "opportunities.details.notfound": "لم يتم العثور على الفرصة.",
@@ -665,6 +775,9 @@ i18n
           "opportunities.details.apply": "تقدَّم الآن",
           "opportunities.details.alreadyApplied": "تم التقديم مسبقًا",
           "opportunities.details.orgCantApply": "المنظمات لا يمكنها التقديم",
+
+
+
 
 
 
@@ -696,6 +809,8 @@ i18n
           "gender.male": "ذكر",
           "gender.female": "أنثى",
           "gender.prefernottosay": "أفضل عدم الذكر",
+          "settings.phone": "رقم الهاتف",
+          "settings.degree": "الدرجة العلمية",
         },
       },
     },

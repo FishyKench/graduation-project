@@ -2,17 +2,19 @@ import React, { useEffect, useState } from "react";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const ApplicationTracker = () => {
   const [applications, setApplications] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchApplications = async () => {
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) return;
-    
+
       const userId = authData.user.id;
-    
+
       const { data, error } = await supabase
         .from("applications")
         .select(`
@@ -21,14 +23,13 @@ const ApplicationTracker = () => {
           users!applications_organization_id_fkey ( fname )
         `)
         .eq("user_id", userId);
-    
+
       if (!error) {
         setApplications(data);
       } else {
         console.error("Error fetching applications:", error.message);
       }
     };
-    
 
     fetchApplications();
   }, []);
@@ -51,24 +52,26 @@ const ApplicationTracker = () => {
       <Header />
       <main className="flex-1 py-8 px-4">
         <div className="w-full max-w-4xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-6">Your Applications</h2>
+          <h2 className="text-2xl font-semibold mb-6">{t("applications.title")}</h2>
 
           <div className="bg-white rounded-lg shadow overflow-hidden">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Announcement
+                    #
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Organization
+                    {t("applications.details")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t("applications.org")}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
+                    {t("applications.status")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("applications.submittedOn")}
                   </th>
                 </tr>
               </thead>
@@ -76,16 +79,18 @@ const ApplicationTracker = () => {
                 {applications.length > 0 ? (
                   applications.map((app, index) => (
                     <tr key={app.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {app.announcements?.title || "Unknown"} {/* ✅ Fetching title dynamically */}
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {index + 1}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {app.users?.fname || "Unknown"}
+                        {app.announcements?.title || t("applications.status.unknown")}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {app.users?.fname || t("applications.status.unknown")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-3 py-1 text-sm rounded-lg ${getStatusColor(app.status)}`}>
-                          {app.status}
+                          {t(`applications.status.${app.status}`)}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -96,7 +101,7 @@ const ApplicationTracker = () => {
                 ) : (
                   <tr>
                     <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
-                      No applications found.
+                      {t("applications.none")}
                     </td>
                   </tr>
                 )}

@@ -5,9 +5,12 @@ import Footer from "../auth/Footer";
 import supabase from "../../../createClient";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { useTranslation } from "react-i18next";
 
 const NewAnnouncement = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     type: "volunteer",
     title: "",
@@ -18,7 +21,7 @@ const NewAnnouncement = () => {
     description: "",
     paid: false,
     salary: "",
-    hours: "", // ✅ Added hours field
+    hours: "",
   });
 
   const handleSubmit = async (e) => {
@@ -44,7 +47,7 @@ const NewAnnouncement = () => {
         description: formData.description || "No description provided.",
         paid: formData.paid,
         salary: formData.paid ? parseFloat(formData.salary) || null : null,
-        hours: formData.type === "volunteer" ? parseInt(formData.hours) || null : null, // ✅ Save hours if volunteer
+        hours: formData.type === "volunteer" ? parseInt(formData.hours) || null : null,
       },
     ]);
 
@@ -65,11 +68,16 @@ const NewAnnouncement = () => {
       <Header />
       <main className="flex-1 py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-semibold mb-6">New Announcement</h1>
+          <h1 className="text-2xl font-semibold mb-6">
+            {t("announcementForm.title")}
+          </h1>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Type */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.type")}
+              </label>
               <select
                 name="type"
                 value={formData.type}
@@ -77,20 +85,24 @@ const NewAnnouncement = () => {
                 className="w-full px-3 py-2 border rounded-md"
                 required
               >
-                <option value="volunteer">Volunteer</option>
-                <option value="internship">Internship</option>
+                <option value="volunteer">{t("announcementForm.type.volunteer")}</option>
+                <option value="internship">{t("announcementForm.type.internship")}</option>
               </select>
             </div>
 
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.name")}
+              </label>
               <Input name="title" value={formData.title} onChange={handleChange} required />
             </div>
 
             {/* Degree */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.degree")}
+              </label>
               <select
                 name="degree"
                 value={formData.degree}
@@ -98,27 +110,39 @@ const NewAnnouncement = () => {
                 className="w-full px-3 py-2 border rounded-md"
                 required
               >
-                <option value="highschool">High School</option>
-                <option value="undergraduate">Undergraduate</option>
-                <option value="coop">CO-OP</option>
+                <option value="highschool">{t("announcementForm.degree.highschool")}</option>
+                <option value="undergraduate">{t("announcementForm.degree.undergraduate")}</option>
+                <option value="coop">{t("announcementForm.degree.coop")}</option>
               </select>
             </div>
 
             {/* Location */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.location")}
+              </label>
               <Input name="location" value={formData.location} onChange={handleChange} required />
             </div>
 
             {/* Deadline */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
-              <Input type="date" name="deadline" value={formData.deadline} onChange={handleChange} required />
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.deadline")}
+              </label>
+              <Input
+                type="date"
+                name="deadline"
+                value={formData.deadline}
+                onChange={handleChange}
+                required
+              />
             </div>
 
             {/* Picture */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Picture URL</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.picture")}
+              </label>
               <Input
                 type="url"
                 name="picture"
@@ -129,46 +153,52 @@ const NewAnnouncement = () => {
               />
             </div>
 
-            {/* Paid Checkbox */}
+            {/* Paid */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Is Paid?</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.paid")}
+              </label>
               <select
                 name="paid"
                 value={formData.paid ? "paid" : "unpaid"}
                 onChange={(e) => setFormData({ ...formData, paid: e.target.value === "paid" })}
                 className="w-full px-3 py-2 border rounded-md"
               >
-                <option value="unpaid">Unpaid</option>
-                <option value="paid">Paid</option>
+                <option value="unpaid">{t("announcementForm.unpaid")}</option>
+                <option value="paid">{t("announcementForm.paid")}</option>
               </select>
             </div>
 
-            {/* Salary (Only if Paid is true) */}
+            {/* Salary */}
             {formData.paid && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Salary (SAR)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("announcementForm.salary")}
+                </label>
                 <Input
                   type="number"
                   name="salary"
                   value={formData.salary}
                   onChange={handleChange}
-                  placeholder="Enter salary amount"
+                  placeholder={t("announcementForm.salary.placeholder")}
                   min="0"
                   required
                 />
               </div>
             )}
 
-            {/* Hours (Only if Type is Volunteer) */}
+            {/* Hours */}
             {formData.type === "volunteer" && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Volunteer Hours</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("announcementForm.hours")}
+                </label>
                 <Input
                   type="number"
                   name="hours"
                   value={formData.hours}
                   onChange={handleChange}
-                  placeholder="Enter the number of volunteer hours"
+                  placeholder={t("announcementForm.hours.placeholder")}
                   min="1"
                   required
                 />
@@ -177,12 +207,14 @@ const NewAnnouncement = () => {
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("announcementForm.description")}
+              </label>
               <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Enter a description..."
+                placeholder={t("announcementForm.description.placeholder")}
                 className="w-full px-3 py-2 border rounded-md"
                 rows="3"
               />
@@ -191,9 +223,9 @@ const NewAnnouncement = () => {
             {/* Buttons */}
             <div className="flex justify-end gap-4 mt-6">
               <Button type="button" variant="outline" onClick={() => navigate("/applications/manage")}>
-                Cancel
+                {t("announcementForm.cancel")}
               </Button>
-              <Button type="submit">Submit</Button>
+              <Button type="submit">{t("announcementForm.submit")}</Button>
             </div>
           </form>
         </div>

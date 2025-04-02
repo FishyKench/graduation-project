@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const NewApplicationForm = ({ onClose, onSuccess }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     type: "volunteer",
     title: "",
@@ -12,8 +15,8 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
     deadline: "",
     picture: "",
     description: "",
-    paid: false, // ✅ New paid toggle
-    salary: "",  // ✅ New salary input (only if paid)
+    paid: false,
+    salary: "",
   });
 
   const handleSubmit = async (e) => {
@@ -37,8 +40,8 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
         deadline: formData.deadline,
         image_url: formData.picture,
         description: formData.description || "No description provided.",
-        paid: formData.paid, // ✅ Store paid status
-        salary: formData.paid ? formData.salary : null, // ✅ Only store salary if paid
+        paid: formData.paid,
+        salary: formData.paid ? formData.salary : null,
       },
     ]);
 
@@ -60,11 +63,13 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg">
-      <div className="text-2xl font-semibold mb-6">New Announcement</div>
+      <div className="text-2xl font-semibold mb-6">{t("announcementForm.title")}</div>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.type")}
+          </label>
           <select
             name="type"
             value={formData.type}
@@ -72,18 +77,22 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
             className="w-full px-3 py-2 border rounded-md"
             required
           >
-            <option value="volunteer">Volunteer</option>
-            <option value="internship">Internship</option>
+            <option value="volunteer">{t("announcementForm.type.volunteer")}</option>
+            <option value="internship">{t("announcementForm.type.internship")}</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.name")}
+          </label>
           <Input name="title" value={formData.title} onChange={handleChange} required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Degree</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.degree")}
+          </label>
           <select
             name="degree"
             value={formData.degree}
@@ -91,24 +100,30 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
             className="w-full px-3 py-2 border rounded-md"
             required
           >
-            <option value="highschool">High School</option>
-            <option value="undergraduate">Undergraduate</option>
-            <option value="coop">CO-OP</option>
+            <option value="highschool">{t("announcementForm.degree.highschool")}</option>
+            <option value="undergraduate">{t("announcementForm.degree.undergraduate")}</option>
+            <option value="coop">{t("announcementForm.degree.coop")}</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.location")}
+          </label>
           <Input name="location" value={formData.location} onChange={handleChange} required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.deadline")}
+          </label>
           <Input type="date" name="deadline" value={formData.deadline} onChange={handleChange} required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Picture URL</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.picture")}
+          </label>
           <Input
             type="url"
             name="picture"
@@ -119,7 +134,6 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
           />
         </div>
 
-        {/* ✅ New Paid Toggle */}
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -128,31 +142,36 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
             onChange={handleChange}
             className="w-5 h-5"
           />
-          <label className="text-sm font-medium text-gray-700">Is this a paid opportunity?</label>
+          <label className="text-sm font-medium text-gray-700">
+            {t("announcementForm.paid")}
+          </label>
         </div>
 
-        {/* ✅ Salary Input (Only if Paid) */}
         {formData.paid && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Salary (per month)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t("announcementForm.salary")}
+            </label>
             <Input
               type="number"
               name="salary"
               value={formData.salary}
               onChange={handleChange}
               min="1"
-              required={formData.paid}
+              required
             />
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            {t("announcementForm.description")}
+          </label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter a description..."
+            placeholder={t("announcementForm.description.placeholder")}
             className="w-full px-3 py-2 border rounded-md"
             rows="3"
           />
@@ -161,9 +180,9 @@ const NewApplicationForm = ({ onClose, onSuccess }) => {
 
       <div className="flex justify-end gap-4 mt-6">
         <Button type="button" variant="outline" onClick={onClose}>
-          Cancel
+          {t("announcementForm.cancel")}
         </Button>
-        <Button type="submit">Submit</Button>
+        <Button type="submit">{t("announcementForm.submit")}</Button>
       </div>
     </form>
   );

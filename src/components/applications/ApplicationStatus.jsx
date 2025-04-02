@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import supabase from "../../../createClient";
+import { useTranslation } from "react-i18next";
 
 const ApplicationStatus = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchApplications = async () => {
       setLoading(true);
 
-      // ✅ Get logged-in user
       const { data: authData, error: authError } = await supabase.auth.getUser();
       if (authError || !authData.user) {
         console.error("❌ Authentication error:", authError?.message);
@@ -19,7 +20,6 @@ const ApplicationStatus = () => {
 
       const userId = authData.user.id;
 
-      // ✅ Fetch applications & join with users to get organization name
       const { data, error } = await supabase
         .from("applications")
         .select("id, status, created_at, users!applications_organization_id_fkey(fname)")
@@ -53,25 +53,25 @@ const ApplicationStatus = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 py-8 px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-semibold mb-4">Application Status</h1>
+        <h1 className="text-2xl font-semibold mb-4">{t("applications.title")}</h1>
 
         {loading ? (
-          <p className="text-center py-4">Loading...</p>
+          <p className="text-center py-4">{t("applications.loading")}</p>
         ) : applications.length === 0 ? (
-          <p className="text-center py-4">No applications found.</p>
+          <p className="text-center py-4">{t("applications.none")}</p>
         ) : (
           <ul className="space-y-4">
             {applications.map((app) => (
               <li key={app.id} className="p-4 bg-gray-100 rounded-lg">
                 <p className="text-lg font-medium">
-                  Organization: {app.users?.fname || "Unknown"}
+                  {t("applications.org")}: {app.users?.fname || t("applications.status.unknown")}
                 </p>
                 <div className="flex justify-between items-center mt-2">
                   <span className="text-sm text-gray-500">
-                    Submitted on: {new Date(app.created_at).toLocaleDateString()}
+                    {t("applications.submittedOn")}: {new Date(app.created_at).toLocaleDateString()}
                   </span>
                   <span className={`px-3 py-1 rounded-lg ${getStatusColor(app.status)}`}>
-                    {app.status}
+                    {t(`applications.status.${app.status}`)}
                   </span>
                 </div>
               </li>
