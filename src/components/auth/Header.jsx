@@ -6,7 +6,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "../ui/navigation-menu";
-import { Globe, Menu } from "lucide-react";
+import { Globe } from "lucide-react";
 import AnnouncementsDropdown from "../announcements/AnnouncementsDropdown";
 import {
   DropdownMenu,
@@ -99,11 +99,12 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   return (
     <header className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200 relative header z-20">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
+        {/* ✅ Left: Logo */}
         <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
           <span className="text-xl font-semibold text-purple-600">Volunect</span>
         </div>
 
-        {/* Main Navigation */}
+        {/* ✅ Center: Navigation */}
         <NavigationMenu className="hidden lg:flex flex-1 justify-center">
           <NavigationMenuList
             className={`flex items-center gap-2 ${i18n.language === "ar" ? "flex-row-reverse" : ""}`}
@@ -129,9 +130,8 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="flex items-center gap-4">
-          {/* ✅ Removed search bar here */}
-
+        {/* ✅ Right: Profile + Language */}
+        <div className="flex items-center gap-2">
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -145,7 +145,7 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
-                  Profile
+                  {t("profile")}
                 </DropdownMenuItem>
                 {userLevel === 1 && (
                   <DropdownMenuItem onClick={() => navigate("/applications/tracker")}>
@@ -176,24 +176,24 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
               </Button>
             </div>
           )}
-        </div>
 
-        {/* Language Selector */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Globe className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => changeLanguage("en")}>
-              {t("english")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => changeLanguage("ar")}>
-              {t("arabic")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          {/* 🌐 Language Selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Globe className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => changeLanguage("en")}>
+                {t("english")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeLanguage("ar")}>
+                {t("arabic")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

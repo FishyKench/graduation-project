@@ -12,12 +12,9 @@ const ProfilePage = () => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.language === "ar";
 
-  // Fetch profile data from Supabase
   useEffect(() => {
     const fetchUserProfile = async () => {
       setLoading(true);
-
-      // Check if there is an ID in the URL
       if (!id) {
         const { data: authData, error: authError } = await supabase.auth.getUser();
         if (authError || !authData.user) {
@@ -38,11 +35,7 @@ const ProfilePage = () => {
         .eq("id", userId)
         .single();
 
-      if (error) {
-        console.error("❌ Error fetching user profile:", error.message);
-      } else {
-        setProfileData(data);
-      }
+      if (!error) setProfileData(data);
       setLoading(false);
     };
 
@@ -82,26 +75,11 @@ const ProfilePage = () => {
               </h1>
               <p className="text-gray-500">{displayProfile.email}</p>
               <p className="text-gray-500">{displayProfile.phone_number}</p>
-              {/* Volunteer Hours Badge */}
               {displayProfile.volunteer_hours >= 0 && (
-                <div
-                  className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 ${isArabic ? "flex-row-reverse" : ""
-                    }`}
-                >
+                <div className={`mt-2 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 ${isArabic ? "flex-row-reverse" : ""}`}>
                   <span className={`mx-1 ${isArabic ? "ml-2" : "mr-1"}`}>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </span>
                   <span>
@@ -114,7 +92,6 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          {/* Description Section */}
           {displayProfile.description && (
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
               <h2 className="text-lg font-medium mb-2">{t("profile.about")}</h2>
@@ -132,26 +109,30 @@ const ProfilePage = () => {
                 </div>
                 <div>
                   <label className="text-sm text-gray-500">{t("profile.age")}</label>
-                  <p>{displayProfile.age || "Not specified"}</p>
+                  <p>{displayProfile.age || t("notSpecified")}</p>
                 </div>
                 <div>
                   <label className="text-sm text-gray-500">{t("profile.gender")}</label>
-                  <p>{displayProfile.gender || "Not specified"}</p>
+                  <p>{displayProfile.gender ? t(`gender.${displayProfile.gender.toLowerCase()}`) : t("notSpecified")}</p>
                 </div>
                 <div>
                   <label className="text-sm text-gray-500">{t("profile.degree")}</label>
-                  <p>{displayProfile.degree || "Not specified"}</p>
+                  <p>
+                    {displayProfile.degree
+                      ? t(`program.${displayProfile.degree.toLowerCase().replace(/\s/g, "")}`)
+                      : t("notSpecified")}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm text-gray-500">{t("profile.location")}</label>
                   <p>
-                    {displayProfile.cities?.regions?.name || "Unknown"}, {displayProfile.cities?.name || "Unknown"}
+                    {displayProfile.cities?.regions?.name || "Unknown"},{" "}
+                    {displayProfile.cities?.name || "Unknown"}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* CV Link (Only Show If Available) */}
             {displayProfile.cv && (
               <div>
                 <h2 className="text-lg font-medium mb-2">{t("profile.cv")}</h2>
@@ -166,7 +147,6 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {/* Interest Section */}
             {displayProfile.interest && (
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                 <h2 className="text-lg font-medium mb-2">{t("profile.interest")}</h2>
@@ -174,56 +154,27 @@ const ProfilePage = () => {
               </div>
             )}
 
-            {/* Contact Information Section */}
             <div>
               <h2 className="text-lg font-medium mb-2">{t("profile.contact")}</h2>
               <div className="space-y-2">
                 <div className="flex items-center">
                   <span className="text-gray-500 mr-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </span>
-                  <a
-                    href={`mailto:${displayProfile.email}`}
-                    className="text-purple-600 hover:text-purple-700"
-                  >
+                  <a href={`mailto:${displayProfile.email}`} className="text-purple-600 hover:text-purple-700">
                     {displayProfile.email}
                   </a>
                 </div>
                 {displayProfile.phone_number && (
                   <div className="flex items-center">
                     <span className="text-gray-500 mr-2">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1" />
                       </svg>
                     </span>
-                    <a
-                      href={`tel:${displayProfile.phone_number}`}
-                      className="text-purple-600 hover:text-purple-700"
-                    >
+                    <a href={`tel:${displayProfile.phone_number}`} className="text-purple-600 hover:text-purple-700">
                       {displayProfile.phone_number}
                     </a>
                   </div>
