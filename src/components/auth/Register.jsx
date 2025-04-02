@@ -4,18 +4,18 @@ import Header from "./Header";
 import Footer from "./Footer";
 import VolunteerForm from "./VolunteerForm";
 import OrganizationForm from "./OrganizationForm";
-import supabase from "../../../createClient"; // ✅ Import Supabase
+import supabase from "../../../createClient"; 
 import { useTranslation } from "react-i18next";
 
 const Register = () => {
   const [userType, setUserType] = useState("volunteer");
   const [regions, setRegions] = useState([]); 
-  const [cities, setCities] = useState([]); // ✅ Fetch from DB
+  const [cities, setCities] = useState([]); 
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // ✅ Fetch regions and cities from the database
+  
   useEffect(() => {
     const fetchRegions = async () => {
       const { data, error } = await supabase.from("regions").select("id, name");
@@ -35,7 +35,7 @@ const Register = () => {
     setMessage("");
     console.log("🔵 Registration data:", { type: userType, ...formData });
   
-    // ✅ Step 1: Register in Supabase Auth
+    // Step 1: Register in Supabase Auth
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
@@ -49,12 +49,12 @@ const Register = () => {
   
     console.log("✅ User created:", signUpData.user);
   
-    // ✅ Step 2: Prepare metadata for database
+    // Step 2: Prepare metadata for database
     let userMetadata = {
       id: signUpData.user.id,
       email: formData.email,
       fname: formData.firstName,
-      mname: formData.middleName, // ✅ Middle name stays
+      mname: formData.middleName, 
       lname: formData.lastName,
       age: formData.age,
       phone_number: formData.phone,
@@ -65,18 +65,18 @@ const Register = () => {
       gender: formData.gender,
     };
   
-    // ✅ Add extra fields for volunteers
+    // Add extra fields for volunteers
     if (userType === "volunteer") {
       userMetadata = {
         ...userMetadata,
-        degree: formData.degree, // ✅ Degree selection gets stored
-        interest: formData.interest, // ✅ Interests get stored
-        cv: formData.cvLink, // ✅ CV link gets stored
-        description: formData.description, // ✅ Description gets stored
+        degree: formData.degree, 
+        interest: formData.interest, 
+        cv: formData.cvLink, 
+        description: formData.description, 
       };
     }
   
-    // ✅ Step 3: Insert into users table
+    // Step 3: Insert into users table
     const { error: userError } = await supabase.from("users").insert([userMetadata]);
   
     if (userError) {
@@ -87,7 +87,7 @@ const Register = () => {
   
     console.log("✅ Metadata Inserted into users table");
   
-    // ✅ Step 4: Auto-login after registration
+    // Step 4: Auto-login after registration
     const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
       email: formData.email,
       password: formData.password,
@@ -97,7 +97,7 @@ const Register = () => {
       setMessage("Error logging in after registration: " + loginError.message);
     } else {
       console.log("✅ Auto-login successful:", loginData.user);
-      navigate("/"); // ✅ Redirect to LandingPage
+      navigate("/");
     }
   };
 
@@ -131,14 +131,14 @@ const Register = () => {
             </button>
           </div>
 
-          {/* ✅ Pass userType to determine which form to render */}
+          {/* Pass userType to determine which form to render */}
           {userType === "volunteer" ? (
             <VolunteerForm regions={regions} cities={cities} onSubmit={handleRegister} />
           ) : (
             <OrganizationForm regions={regions} cities={cities} onSubmit={handleRegister} />
           )}
 
-          {/* ✅ Show error messages if any */}
+          {/* Show error messages if any */}
           {message && <p className="text-red-500 mt-4 text-center">{message}</p>}
 
           <div className="mt-6 text-center text-sm text-gray-500">

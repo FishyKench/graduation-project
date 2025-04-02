@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
-import supabase from "../../../createClient"; // Go up 3 directories
+import supabase from "../../../createClient"; 
 import { useTranslation } from "react-i18next";
 
 const LoginForm = ({ onSubmit = () => {} }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate(); // ✅ Initialize useNavigate
+  const navigate = useNavigate(); 
   const { t } = useTranslation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage(""); // Reset error messages
+    setMessage(""); 
 
     console.log("🔵 Attempting login for:", email);
 
@@ -28,8 +28,8 @@ const LoginForm = ({ onSubmit = () => {} }) => {
       setMessage("Login successful!");
 
       setTimeout(() => {
-        navigate("/"); // ✅ Redirect to LandingPage after login
-      }, 1000); // Short delay to show success message
+        navigate("/"); 
+      }, 1000); 
     }
   };
 

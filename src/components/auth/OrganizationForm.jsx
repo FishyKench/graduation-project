@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
-import supabase from "../../../createClient"; // ✅ Ensure correct import
+import supabase from "../../../createClient"; 
 import { useTranslation } from "react-i18next";
 
 const OrganizationForm = ({ onSubmit = () => {} }) => {
@@ -10,7 +10,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    name: "", // ✅ This will be stored in fname
+    name: "", 
     phone: "",
     location: "",
     region: "",
@@ -20,9 +20,8 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
   const [regions, setRegions] = useState([]);
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ✅ Added navigation
+  const navigate = useNavigate();
 
-  // ✅ Fetch Regions & Cities from Supabase
   useEffect(() => {
     const fetchRegions = async () => {
       const { data, error } = await supabase.from("regions").select("id, name");
@@ -38,7 +37,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
     fetchCities();
   }, []);
 
-  // ✅ Handle form changes
+  // Handle form changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -48,7 +47,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
     }));
   };
 
-  // ✅ Register organization & store name in fname
+  // Register organization & store name in fname
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
@@ -56,7 +55,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
 
     console.log("🔵 Attempting signup for:", formData.email);
 
-    // ✅ Step 1: Register user in Supabase Auth
+    // Step 1: Register user in Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: formData.email,
       password: formData.password,
@@ -73,16 +72,16 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
 
     const userId = authData.user.id;
 
-    // ✅ Step 2: Insert organization into `users` table with fname
+    // Step 2: Insert organization into `users` table with fname
     const { data, error } = await supabase.from("users").insert([
       {
         id: userId,
-        fname: formData.name, // ✅ Store organization name in fname
+        fname: formData.name, // Store organization name in fname
         phone_number: formData.phone,
         location: formData.location,
         region: parseInt(formData.region),
         city: parseInt(formData.city),
-        level: 2, // ✅ Level 2 for organizations
+        level: 2, 
         email: formData.email,
       },
     ]);
@@ -97,7 +96,7 @@ const OrganizationForm = ({ onSubmit = () => {} }) => {
     console.log("✅ Organization Registered Successfully:", data);
     setLoading(false);
     
-    navigate("/"); // ✅ Redirect to home after signup
+    navigate("/"); //Redirect to home after signup
   };
 
   return (

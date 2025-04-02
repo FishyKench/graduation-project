@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import supabase from "../../createClient"; // ✅ Import Supabase
+import supabase from "../../createClient"; 
 import { useTranslation } from "react-i18next";
 
 const RegisterForm = ({ onSubmit = () => {} }) => {
@@ -16,11 +16,11 @@ const RegisterForm = ({ onSubmit = () => {} }) => {
     age: "",
   });
 
-  const [regions, setRegions] = useState([]); // ✅ Fetch from DB
-  const [cities, setCities] = useState([]); // ✅ Fetch from DB
+  const [regions, setRegions] = useState([]); 
+  const [cities, setCities] = useState([]); 
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch regions and cities from the database
+  // Fetch regions and cities from the database
   useEffect(() => {
     const fetchRegions = async () => {
       const { data, error } = await supabase.from("regions").select("id, name");

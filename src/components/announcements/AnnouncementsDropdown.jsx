@@ -56,7 +56,7 @@ const AnnouncementsDropdown = () => {
 
   const getTranslatedDegree = (degree) => {
     if (!degree) return "";
-    const key = degree.replace(/\s+/g, "").toLowerCase(); // e.g., "High School" => "highschool"
+    const key = degree.replace(/\s+/g, "").toLowerCase(); 
     return t(`program.${key}`);
   };
 
