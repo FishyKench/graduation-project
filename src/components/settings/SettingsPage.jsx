@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Header from "../auth/Header";
 import Footer from "../auth/Footer";
@@ -31,7 +31,8 @@ const SettingsPage = () => {
 
         let userId = id;
         if (!userId) {
-          const { data: authData, error: authError } = await supabase.auth.getUser();
+          const { data: authData, error: authError } =
+            await supabase.auth.getUser();
           if (authError || !authData.user) {
             setLoading(false);
             return;
@@ -42,7 +43,7 @@ const SettingsPage = () => {
         const { data, error } = await supabase
           .from("users")
           .select(
-            "email, fname, mname, lname, phone_number, region, city, degree, gender, cv, description, interest"
+            "email, fname, mname, lname, phone_number, region, city, degree, gender, cv, description, interest",
           )
           .eq("id", userId)
           .single();
@@ -67,7 +68,8 @@ const SettingsPage = () => {
 
   const handleSave = async () => {
     try {
-      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const { data: authData, error: authError } =
+        await supabase.auth.getUser();
       if (authError || !authData.user) {
         alert("User not authenticated");
         return;
@@ -86,20 +88,25 @@ const SettingsPage = () => {
     }
   };
 
-  if (loading) return <p>{t("loading")}</p>;
+  if (loading)
+    return <p className="text-center p-8 dark:text-white">{t("loading")}</p>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       <Header />
       <main className="flex-1 py-8 px-4">
-        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-6">{t("settings.title")}</h2>
+        <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-6 dark:text-white">
+            {t("settings.title")}
+          </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block font-medium">{t("email")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("email")}
+              </label>
               <input
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 type="email"
                 name="email"
                 value={formData.email}
@@ -109,9 +116,11 @@ const SettingsPage = () => {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block font-medium">{t("settings.firstName")}</label>
+                <label className="block font-medium dark:text-gray-300">
+                  {t("settings.firstName")}
+                </label>
                 <input
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   type="text"
                   name="fname"
                   value={formData.fname}
@@ -119,9 +128,11 @@ const SettingsPage = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">{t("settings.middleName")}</label>
+                <label className="block font-medium dark:text-gray-300">
+                  {t("settings.middleName")}
+                </label>
                 <input
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   type="text"
                   name="mname"
                   value={formData.mname}
@@ -129,9 +140,11 @@ const SettingsPage = () => {
                 />
               </div>
               <div>
-                <label className="block font-medium">{t("settings.lastName")}</label>
+                <label className="block font-medium dark:text-gray-300">
+                  {t("settings.lastName")}
+                </label>
                 <input
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   type="text"
                   name="lname"
                   value={formData.lname}
@@ -141,9 +154,11 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">{t("settings.phone")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("settings.phone")}
+              </label>
               <input
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 type="text"
                 name="phone_number"
                 value={formData.phone_number}
@@ -152,26 +167,32 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">{t("profile.gender")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("profile.gender")}
+              </label>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleInputChange}
                 required
-                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               >
                 <option value="">{t("settings.selectGender")}</option>
                 <option value="male">{t("gender.male")}</option>
                 <option value="female">{t("gender.female")}</option>
-                <option value="prefer_not_to_say">{t("gender.prefernottosay")}</option>
+                <option value="prefer_not_to_say">
+                  {t("gender.prefernottosay")}
+                </option>
               </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block font-medium">{t("settings.region")}</label>
+                <label className="block font-medium dark:text-gray-300">
+                  {t("settings.region")}
+                </label>
                 <select
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   name="region"
                   value={formData.region}
                   onChange={handleInputChange}
@@ -185,9 +206,11 @@ const SettingsPage = () => {
               </div>
 
               <div>
-                <label className="block font-medium">{t("settings.city")}</label>
+                <label className="block font-medium dark:text-gray-300">
+                  {t("settings.city")}
+                </label>
                 <select
-                  className="w-full p-2 border rounded"
+                  className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
@@ -202,9 +225,11 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">{t("settings.degree")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("settings.degree")}
+              </label>
               <select
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 name="degree"
                 value={formData.degree}
                 onChange={handleInputChange}
@@ -212,14 +237,18 @@ const SettingsPage = () => {
                 <option value="">{t("settings.selectDegree")}</option>
                 <option value="High School">{t("program.highschool")}</option>
                 <option value="CO-OP">{t("program.coop")}</option>
-                <option value="Undergraduate">{t("program.undergraduate")}</option>
+                <option value="Undergraduate">
+                  {t("program.undergraduate")}
+                </option>
               </select>
             </div>
 
             <div>
-              <label className="block font-medium">{t("settings.cvLink")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("settings.cvLink")}
+              </label>
               <input
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 type="url"
                 name="cv"
                 value={formData.cv}
@@ -228,9 +257,11 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">{t("settings.about")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("settings.about")}
+              </label>
               <textarea
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
@@ -238,9 +269,11 @@ const SettingsPage = () => {
             </div>
 
             <div>
-              <label className="block font-medium">{t("settings.services")}</label>
+              <label className="block font-medium dark:text-gray-300">
+                {t("settings.services")}
+              </label>
               <textarea
-                className="w-full p-2 border rounded"
+                className="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 name="interest"
                 value={formData.interest}
                 onChange={handleInputChange}
@@ -249,7 +282,7 @@ const SettingsPage = () => {
             </div>
 
             <button
-              className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="w-full p-2 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
               onClick={handleSave}
             >
               {t("save")}
@@ -263,3 +296,4 @@ const SettingsPage = () => {
 };
 
 export default SettingsPage;
+

@@ -69,8 +69,8 @@ const AnnouncementsDropdown = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[350px] p-2">
-        <div className="mb-2 p-2 bg-gray-50 rounded-md">
-          <div className="text-sm font-medium text-gray-500 mb-2">
+        <div className="mb-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+          <div className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-2">
             {t("filter.byProgram")}
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -79,11 +79,7 @@ const AnnouncementsDropdown = () => {
                 key={filter.id}
                 variant="ghost"
                 size="sm"
-                className={`flex items-center gap-1 px-2 py-1 ${
-                  selectedDegree === filter.id
-                    ? "bg-purple-100 text-purple-600"
-                    : ""
-                }`}
+                className={`flex items-center gap-1 px-2 py-1 ${selectedDegree === filter.id ? "bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300" : ""}`}
                 onClick={() => setSelectedDegree(filter.id)}
               >
                 <filter.icon className="h-3 w-3" />
@@ -100,7 +96,7 @@ const AnnouncementsDropdown = () => {
             filteredAnnouncements.map((announcement, index) => (
               <DropdownMenuItem
                 key={index}
-                className="flex items-start gap-3 p-2 cursor-pointer hover:bg-gray-50"
+                className="flex items-start gap-3 p-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
                 onClick={() => navigate(`/opportunities/${announcement.id}`)}
               >
                 <img
@@ -112,17 +108,17 @@ const AnnouncementsDropdown = () => {
                   <div className="font-medium text-sm truncate">
                     {announcement.title}
                   </div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
                     {announcement.users?.fname || t("profile.unknown")}
                   </div>
-                  <div className="text-xs text-purple-600 mt-1 capitalize">
+                  <div className="text-xs text-purple-600 dark:text-purple-400 mt-1 capitalize">
                     {getTranslatedDegree(announcement.degree)}
                   </div>
                 </div>
               </DropdownMenuItem>
             ))
           ) : (
-            <p className="text-center text-gray-500 text-sm py-2">
+            <p className="text-xs text-purple-600 dark:text-purple-400 mt-1 capitalize">
               {t("announcements.none")}
             </p>
           )}
@@ -131,7 +127,7 @@ const AnnouncementsDropdown = () => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          className="text-center text-sm text-purple-600 hover:text-purple-700 cursor-pointer"
+          className="text-center text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 cursor-pointer"
           onClick={() => navigate("/announcements")}
         >
           {t("announcements.viewAll")}

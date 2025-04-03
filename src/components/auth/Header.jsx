@@ -6,7 +6,7 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "../ui/navigation-menu";
-import { Globe } from "lucide-react";
+import { Globe, Menu, Search, Moon, Sun } from "lucide-react"; // Combined icons in one line
 import AnnouncementsDropdown from "../announcements/AnnouncementsDropdown";
 import {
   DropdownMenu,
@@ -17,14 +17,20 @@ import {
 } from "../ui/dropdown-menu";
 import supabase from "../../../createClient";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../../lib/theme-provider";
 
 const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [firstName, setFirstName] = useState(localStorage.getItem("firstName") || "Guest");
-  const [userLevel, setUserLevel] = useState(localStorage.getItem("userLevel") || null);
+  const [firstName, setFirstName] = useState(
+    localStorage.getItem("firstName") || "Guest",
+  );
+  const [userLevel, setUserLevel] = useState(
+    localStorage.getItem("userLevel") || null,
+  );
   const [loading, setLoading] = useState(true);
   const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -49,7 +55,8 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
         return;
       }
 
-      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const { data: authData, error: authError } =
+        await supabase.auth.getUser();
 
       if (authError || !authData.user) {
         setUser(null);
@@ -97,11 +104,14 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
   };
 
   return (
-    <header className="w-full h-20 px-4 md:px-6 bg-white border-b border-gray-200 relative header z-20">
+    <header className="w-full h-20 px-4 md:px-6 bg-background border-b border-border relative header z-20">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between gap-4">
         {/* ✅ Left: Logo */}
-        <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
-          <span className="text-xl font-semibold text-purple-600">Volunect</span>
+        <div
+          className="flex-shrink-0 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          <span className="text-xl font-semibold text-primary">Volunect</span>
         </div>
 
         {/* ✅ Center: Navigation */}
@@ -135,7 +145,10 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                <Button
+                  variant="ghost"
+                  className="relative h-10 w-10 rounded-full p-0"
+                >
                   <img
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
                     alt="Profile"
@@ -148,12 +161,16 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
                   {t("profile")}
                 </DropdownMenuItem>
                 {userLevel === 1 && (
-                  <DropdownMenuItem onClick={() => navigate("/applications/tracker")}>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/applications/tracker")}
+                  >
                     {t("applications")}
                   </DropdownMenuItem>
                 )}
                 {userLevel === 2 && (
-                  <DropdownMenuItem onClick={() => navigate("/applications/manage")}>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/applications/manage")}
+                  >
                     {t("admin.applications.title")}
                   </DropdownMenuItem>
                 )}
@@ -168,14 +185,30 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
             </DropdownMenu>
           ) : (
             <div className="hidden md:flex items-center gap-2">
-              <Button variant="ghost" className="text-purple-600" onClick={() => navigate("/login")}>
+              <Button
+                variant="ghost"
+                className="text-primary"
+                onClick={() => navigate("/login")}
+              >
                 {t("signIn")}
               </Button>
-              <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={() => navigate("/register")}>
+              <Button
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() => navigate("/register")}
+              >
                 {t("register")}
               </Button>
             </div>
           )}
+
+          {/* 🌍 Theme Toggle */}
+          <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            {theme === "dark" ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
 
           {/* 🌐 Language Selector */}
           <DropdownMenu>

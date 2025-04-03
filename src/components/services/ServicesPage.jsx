@@ -56,7 +56,7 @@ const ServicesPage = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
 
       <main className="flex-1">
@@ -67,7 +67,7 @@ const ServicesPage = () => {
               {t("services.title")}
             </h1>
             <p className="text-xl text-purple-100 max-w-3xl mx-auto">
-            {t("services.subtitle")}
+              {t("services.subtitle")}
             </p>
           </div>
         </div>
@@ -78,14 +78,19 @@ const ServicesPage = () => {
             {services.map((service, index) => (
               <div
                 key={index}
-                className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow"
+                className="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition-shadow dark:bg-gray-800"
               >
                 <service.icon className="w-12 h-12 text-purple-600 mb-6" />
                 <h2 className="text-2xl font-bold mb-4">{service.title}</h2>
-                <p className="text-gray-600 mb-6">{service.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  {service.description}
+                </p>
                 <ul className="space-y-3">
                   {service.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-center text-gray-700">
+                    <li
+                      key={idx}
+                      className="flex items-center text-gray-700 dark:text-gray-200"
+                    >
                       <span className="w-2 h-2 bg-purple-600 rounded-full mr-3" />
                       {feature}
                     </li>
@@ -97,13 +102,13 @@ const ServicesPage = () => {
         </section>
 
         {/* CTA Section */}
-        <section className="bg-gray-100 py-20 px-4">
+        <section className="bg-gray-100 py-20 px-4 dark:bg-gray-900">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-6">
               {t("services.cta.title")}
-              </h2>
-            <p className="text-gray-600 mb-8 text-lg">
-                {t("services.cta.subtitle")}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
+              {t("services.cta.subtitle")}
             </p>
             <div className="flex justify-center gap-4">
               <Button
@@ -114,7 +119,7 @@ const ServicesPage = () => {
               </Button>
               <Button
                 variant="outline"
-                className="border-purple-600 text-purple-600 hover:bg-purple-50 px-8"
+                className="border-purple-600 text-purple-600 hover:bg-purple-50 px-8 dark:text-purple-300 dark:border-purple-400 dark:hover:bg-purple-900/30"
                 onClick={() => (window.location.href = "/contact")}
               >
                 {t("contact")}

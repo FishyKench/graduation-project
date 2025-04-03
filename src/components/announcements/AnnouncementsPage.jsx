@@ -98,7 +98,7 @@ const AnnouncementsPage = () => {
     });
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
       <main className="flex-1 py-8 px-4 md:px-6 max-w-7xl mx-auto w-full">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">

@@ -8,7 +8,7 @@ const ContactPage = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
       <main className="flex-1 max-w-4xl mx-auto w-full py-12 px-4">
         <h1 className="text-3xl font-bold mb-8">{t("contactUs")}</h1>

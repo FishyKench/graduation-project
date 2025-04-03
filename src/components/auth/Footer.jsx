@@ -32,7 +32,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="w-full bg-white border-t border-gray-200 py-8 px-4">
+    <footer className="w-full bg-card border-t border-border py-8 px-4 text-foreground">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         
         {/* Volunteer CTA - Hidden if User is Logged In */}

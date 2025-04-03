@@ -45,7 +45,7 @@ const AboutPage = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
 
       <main className="flex-1">
@@ -67,29 +67,29 @@ const AboutPage = () => {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="bg-white p-6 rounded-lg shadow-md text-center"
+                className="bg-white p-6 rounded-lg shadow-md text-center dark:bg-gray-800"
               >
                 <stat.icon className="w-12 h-12 mx-auto mb-4 text-purple-600" />
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   {stat.number}
                 </h3>
-                <p className="text-gray-600">{stat.label}</p>
+                <p className="text-gray-600 dark:text-gray-300">{stat.label}</p>
               </div>
             ))}
           </div>
         </section>
 
         {/* Mission Section */}
-        <section className="py-16 px-4 bg-white">
+        <section className="py-16 px-4 bg-white dark:bg-gray-800">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12">
               {t("about.mission")}
             </h2>
             <div className="prose lg:prose-lg mx-auto text-center">
-              <p className="text-lg text-gray-600 mb-6">
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                 {t("about.mission.text1")}
               </p>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-gray-600 dark:text-gray-300">
                 {t("about.mission.text2")}
               </p>
             </div>
@@ -97,12 +97,12 @@ const AboutPage = () => {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-16 px-4 bg-gray-50">
+        <section className="py-16 px-4 bg-gray-50 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-4">
               {t("about.benefits.title")}
             </h2>
-            <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-300 text-center mb-12 max-w-3xl mx-auto">
               {t("about.benefits.subtitle")}
             </p>
 
@@ -110,14 +110,16 @@ const AboutPage = () => {
               {benefits.map((benefit, index) => (
                 <div
                   key={index}
-                  className="bg-white p-6 rounded-lg shadow-md flex gap-4"
+                  className="bg-white p-6 rounded-lg shadow-md flex gap-4 dark:bg-gray-800"
                 >
                   <benefit.icon className="w-8 h-8 text-purple-600 flex-shrink-0" />
                   <div>
                     <h3 className="text-xl font-semibold mb-2">
                       {benefit.title}
                     </h3>
-                    <p className="text-gray-600">{benefit.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {benefit.description}
+                    </p>
                   </div>
                 </div>
               ))}

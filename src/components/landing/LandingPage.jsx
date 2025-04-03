@@ -62,7 +62,7 @@ const LandingPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <Header />
 
       <main className="flex-1">
@@ -132,13 +132,13 @@ const LandingPage = () => {
           >
             <motion.div variants={fadeIn}>
               <h2 className="text-4xl font-bold mb-6">Our Mission</h2>
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
                 {t("mission.text")}
               </p>
             </motion.div>
             <motion.div variants={fadeIn}>
               <h2 className="text-4xl font-bold mb-6">{t("whyChoose.title")}</h2>
-              <p className="text-gray-600 text-lg leading-relaxed">
+              <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
                 {t("whyChoose.text")}
               </p>
             </motion.div>
@@ -146,7 +146,7 @@ const LandingPage = () => {
         </section>
 
         {/* Opportunities Section */}
-        <section className="py-24 px-4 bg-gradient-to-b from-purple-50 to-white">
+        <section className="py-24 px-4 bg-gradient-to-b from-purple-50 to-white dark:from-gray-900 dark:to-gray-800">
           <motion.div
             initial="initial"
             whileInView="animate"
@@ -165,8 +165,7 @@ const LandingPage = () => {
                 <motion.div
                   key={index}
                   variants={fadeIn}
-                  className="group relative overflow-hidden rounded-xl bg-white shadow-lg hover:shadow-xl transition-shadow"
-                >
+                  className="group relative overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow"                >
                   <div className="aspect-w-16 aspect-h-9 overflow-hidden">
                     <img
                       src={opp.image}
@@ -176,10 +175,12 @@ const LandingPage = () => {
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold mb-3">{opp.title}</h3>
-                    <p className="text-gray-600 mb-4">{opp.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">
+                      {opp.description}
+                    </p>
                     <Button
                       variant="outline"
-                      className="w-full hover:bg-purple-600 hover:text-white transition-colors"
+                      className="w-full hover:bg-purple-600 hover:text-white transition-colors dark:hover:bg-purple-700"
                       onClick={() => (window.location.href = "/announcements")}
                     >
                       {t("learnMore")}
