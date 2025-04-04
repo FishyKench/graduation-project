@@ -15,6 +15,7 @@ const ApplicationsManagement = () => {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [confirmedHours, setConfirmedHours] = useState({});
+  const [confirmingIds, setConfirmingIds] = useState(new Set());
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -80,22 +81,39 @@ const ApplicationsManagement = () => {
 
   const confirmHours = async (appId, hours) => {
     const app = applications.find((a) => a.id === appId);
-    if (!app || !app.users?.id) return;
+    if (!app || !app.users?.id || app.confirmed || confirmingIds.has(appId)) return;
 
     const volunteerId = app.users.id;
     const confirmed = parseInt(hours) || 0;
+
+    setConfirmingIds((prev) => new Set(prev).add(appId));
 
     const { error: appErr } = await supabase
       .from("applications")
       .update({ completed_hours: confirmed, confirmed: true })
       .eq("id", appId);
 
+    if (appErr) {
+      setConfirmingIds((prev) => {
+        const updated = new Set(prev);
+        updated.delete(appId);
+        return updated;
+      });
+      return;
+    }
+
     const { error: userErr } = await supabase.rpc("increment_volunteer_hours", {
       user_id_input: volunteerId,
       added_hours: confirmed,
     });
 
-    if (!appErr && !userErr) {
+    setConfirmingIds((prev) => {
+      const updated = new Set(prev);
+      updated.delete(appId);
+      return updated;
+    });
+
+    if (!userErr) {
       setApplications((prev) =>
         prev.map((a) =>
           a.id === appId ? { ...a, completed_hours: confirmed, confirmed: true } : a
@@ -238,9 +256,7 @@ const ApplicationsManagement = () => {
                                   });
                                 }
                               }}
-                              className={`w-24 p-1 border rounded text-sm ${
-                                app.confirmed ? "bg-gray-100 text-gray-500" : "bg-white"
-                              }`}
+                              className={`w-24 p-1 border rounded text-sm ${app.confirmed ? "bg-gray-100 text-gray-500" : "bg-white"}`}
                               disabled={app.confirmed}
                             />
                             {!app.confirmed ? (
@@ -249,6 +265,7 @@ const ApplicationsManagement = () => {
                                 onClick={() =>
                                   confirmHours(app.id, confirmedHours[app.id] ?? getAnnouncementHours())
                                 }
+                                disabled={confirmingIds.has(app.id)}
                               >
                                 {t("admin.applications.confirm")}
                               </Button>
