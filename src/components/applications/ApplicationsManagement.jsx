@@ -6,6 +6,8 @@ import supabase from "../../../createClient";
 import { Button } from "../ui/button";
 import { ArrowLeft, ClipboardList, PlusCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import emailjs from "@emailjs/browser";
+
 
 const ApplicationsManagement = () => {
   const { t } = useTranslation();
@@ -42,42 +44,75 @@ const ApplicationsManagement = () => {
   const fetchApplications = async (announcementId) => {
     setSelectedAnnouncement(announcementId);
     setLoading(true);
-
+  
     const { data, error } = await supabase
       .from("applications")
       .select(`
         id, status, created_at, completed_hours, confirmed,
         users!applications_user_id_fkey (
-          id, fname, mname, lname, gender, degree, age, cv,
+          id, fname, mname, lname, gender, degree, age, cv, email,
           cities ( name, regions ( name ) )
         )
       `)
       .eq("announcement_id", announcementId);
-
+  
     if (!error) setApplications(data);
     setLoading(false);
   };
-
+  
   const updateApplicationStatus = async (appId, newStatus) => {
     const { error } = await supabase
       .from("applications")
       .update({ status: newStatus })
       .eq("id", appId);
-
+  
     if (!error) {
       setApplications((prev) =>
         prev.map((app) => (app.id === appId ? { ...app, status: newStatus } : app))
       );
-
+  
       if (newStatus === "approved") {
         const announcementHours = getAnnouncementHours();
         setConfirmedHours((prev) => ({
           ...prev,
           [appId]: announcementHours,
         }));
+  
+        const approvedApp = applications.find((a) => a.id === appId);
+        const announcement = announcements.find((a) => a.id === selectedAnnouncement);
+  
+        if (approvedApp) {
+          console.log("📤 Attempting to send email...");
+  
+          const payload = {
+            to_name: `${approvedApp.users?.fname || "Unknown"} ${approvedApp.users?.lname || ""}`,
+            to_email: approvedApp.users?.email || "",
+            announcement_title: announcement?.title || "an opportunity",
+          };
+  
+          console.log("📧 Payload to EmailJS:", payload);
+  
+          if (payload.to_email && payload.to_email.includes("@")) {
+            emailjs
+              .send("service_yhjmnef", "template_khmyg9u", payload, "O8BXGQavAHmhgqeeL")
+              .then(
+                (res) => {
+                  console.log("✅ EmailJS sent:", res.status, res.text);
+                },
+                (err) => {
+                  console.error("❌ EmailJS failed:", err);
+                }
+              );
+          } else {
+            console.warn("⚠️ No valid email found. Skipping email send.");
+          }
+        }
       }
+    } else {
+      console.error("❌ Supabase status update failed:", error);
     }
   };
+  
 
   const confirmHours = async (appId, hours) => {
     const app = applications.find((a) => a.id === appId);
