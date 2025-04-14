@@ -18,6 +18,9 @@ const ApplicationsManagement = () => {
   const [loading, setLoading] = useState(true);
   const [confirmedHours, setConfirmedHours] = useState({});
   const [confirmingIds, setConfirmingIds] = useState(new Set());
+  const [filterDegree, setFilterDegree] = useState("");
+const [sortBy, setSortBy] = useState("");
+
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -242,8 +245,45 @@ const ApplicationsManagement = () => {
               ) : applications.length === 0 ? (
                 <p className="text-center py-4 text-gray-600">{t("applications.none")}</p>
               ) : (
+                
                 <ul className="space-y-4">
-                  {applications.map((app) => (
+                  <div className="flex flex-wrap gap-4 mb-4">
+  {/* Degree Filter */}
+  <select
+    className="border rounded px-2 py-1 text-sm"
+    value={filterDegree}
+    onChange={(e) => setFilterDegree(e.target.value)}
+  >
+    <option value="">All Degrees</option>
+    <option value="High School">High School</option>
+    <option value="CO-OP">CO-OP</option>
+    <option value="Undergraduate">Undergraduate</option>
+  </select>
+
+  {/* Hours Sort */}
+  <select
+    className="border rounded px-2 py-1 text-sm"
+    value={sortBy}
+    onChange={(e) => setSortBy(e.target.value)}
+  >
+    <option value="">Sort by</option>
+    <option value="most">Most Hours</option>
+    <option value="least">Least Hours</option>
+  </select>
+</div>
+
+{applications
+  .filter((app) => {
+    if (filterDegree && app.users?.degree !== filterDegree) return false;
+    return true;
+  })
+  .sort((a, b) => {
+    if (sortBy === "most") return (b.completed_hours || 0) - (a.completed_hours || 0);
+    if (sortBy === "least") return (a.completed_hours || 0) - (b.completed_hours || 0);
+    return 0;
+  })
+  .map((app) => (
+
                     <li key={app.id} className="p-5 bg-white border border-gray-200 rounded-lg shadow-sm">
                       <div className="flex items-center justify-between">
                         <button

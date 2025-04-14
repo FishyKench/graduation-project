@@ -19,6 +19,7 @@ import OpportunityDetails from "./components/announcements/OpportunityDetails";
 import SettingsPage from "./components/settings/SettingsPage";
 import ApplicationSuccess from "./components/applications/ApplicationSuccess";
 import NewAnnouncement from "./components/applications/NewAnnouncement";
+import AdminDashboard from "./components/admin/AdminDashboard";
 
 function App() {
   const { i18n } = useTranslation();
@@ -31,8 +32,8 @@ function App() {
 
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <ThemeProvider> {/* Wrapping the app in ThemeProvider */}
-        <div className="min-h-screen bg-background text-foreground"> {/* Adding background and text classes */}
+      <ThemeProvider> 
+        <div className="min-h-screen bg-background text-foreground"> 
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Home />} />
@@ -48,14 +49,15 @@ function App() {
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/application-success" element={<ApplicationSuccess />} />
             <Route path="/profile/:id" element={<ProfilePage />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
 
-            {/* ✅ Application Routes */}
+            {/* Application Routes */}
             <Route path="/applications/status" element={<ApplicationStatus />} />
             <Route path="/applications/manage" element={<ApplicationsManagement />} />
             <Route path="/applications/new" element={<NewAnnouncement />} />
             <Route path="/applications/tracker" element={<ApplicationTracker />} />
 
-            {/* ✅ Opportunity Details Route (Fixed to match navigation) */}
+            {/* Opportunity Details Route (Fixed to match navigation) */}
             <Route path="/opportunities/:id" element={<OpportunityDetails />} />
           </Routes>
         </div>

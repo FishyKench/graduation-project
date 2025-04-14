@@ -14,22 +14,40 @@ const LoginForm = ({ onSubmit = () => {} }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage(""); 
-
+    setMessage("");
+  
     console.log("🔵 Attempting login for:", email);
-
+  
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
+  
     if (error) {
       console.error("❌ Login failed:", error.message);
       setMessage(error.message);
     } else {
       console.log("✅ Login successful:", data.user);
-      setMessage("Login successful!");
-
-      setTimeout(() => {
-        navigate("/"); 
-      }, 1000); 
+      const userId = data.user.id;
+  
+      const { data: userProfile, error: profileError } = await supabase
+        .from("users")
+        .select("level")
+        .eq("id", userId)
+        .single();
+  
+      if (profileError) {
+        console.error("❌ Failed to fetch user profile:", profileError.message);
+        setMessage("Failed to fetch user role.");
+        return;
+      }
+  
+      const userLevel = userProfile?.level || 1;
+  
+      if (userLevel === 3) {
+        console.log("🟣 Redirecting admin...");
+        navigate("/admin-dashboard");
+      } else {
+        console.log("🟢 Redirecting regular user...");
+        navigate("/");
+      }
     }
   };
 
