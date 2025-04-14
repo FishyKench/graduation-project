@@ -33,7 +33,7 @@ const AdminDashboard = () => {
 
   const fetchVolunteers = async () => {
     setUserLoading(true);
-  
+
     let query = supabase
       .from("users")
       .select(`
@@ -42,43 +42,40 @@ const AdminDashboard = () => {
         applications:applications_user_id_fkey ( confirmed )
       `)
       .eq("level", 1); // only volunteers
-  
+
     if (selectedDegree) query = query.eq("degree", selectedDegree);
     if (selectedCity) query = query.eq("city", selectedCity);
     if (selectedGender) query = query.eq("gender", selectedGender);
-  
+
     const { data, error } = await query;
-  
+
     if (!error && data) {
-        const formatted = data.map((user) => {
-            const confirmedAppsCount = Array.isArray(user.applications)
-              ? user.applications.filter((a) => a?.confirmed).length
-              : 0;
-          
-            return {
-              id: user.id,
-              name: `${user.fname} ${user.lname}`,
-              email: user.email,
-              city: user.cities?.name || "N/A",
-              degree: user.degree,
-              gender: user.gender,
-              hours: user.volunteer_hours || 0,
-              opportunities: confirmedAppsCount,
-            };
-          });
-          
-  
+      const formatted = data.map((user) => {
+        const confirmedAppsCount = Array.isArray(user.applications)
+          ? user.applications.filter((a) => a?.confirmed).length
+          : 0;
+
+        return {
+          id: user.id,
+          name: `${user.fname} ${user.lname}`,
+          email: user.email,
+          city: user.cities?.name || "N/A",
+          degree: user.degree,
+          gender: user.gender,
+          hours: user.volunteer_hours || 0,
+          opportunities: confirmedAppsCount,
+        };
+      });
+
       if (sortOption === "most_hours") formatted.sort((a, b) => b.hours - a.hours);
       else if (sortOption === "least_hours") formatted.sort((a, b) => a.hours - b.hours);
       else if (sortOption === "most_opportunities") formatted.sort((a, b) => b.opportunities - a.opportunities);
-  
+
       setVolunteers(formatted);
     }
-  
+
     setUserLoading(false);
   };
-  
-  
 
   const fetchAnnouncements = async () => {
     setAnnouncementLoading(true);
@@ -126,6 +123,24 @@ const AdminDashboard = () => {
   const handleApplyFilters = () => {
     if (view === "users") fetchVolunteers();
     else if (view === "announcements") fetchAnnouncements();
+  };
+
+  const exportToCSV = (data, filename = "volunteers.csv") => {
+    const headers = ["Name", "Email", "City", "Degree", "Gender", "Hours", "Opportunities"];
+    const rows = data.map((v) => [
+      v.name, v.email, v.city, v.degree, v.gender, v.hours, v.opportunities
+    ]);
+
+    let csvContent = "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const renderSortOptions = () => {
@@ -191,6 +206,15 @@ const AdminDashboard = () => {
           </select>
 
           <Button onClick={handleApplyFilters} className="bg-blue-600 text-white px-4">Apply Filters</Button>
+
+          {view === "users" && volunteers.length > 0 && (
+            <Button
+              onClick={() => exportToCSV(volunteers)}
+              className="bg-green-600 text-white px-4"
+            >
+              📥 Export CSV
+            </Button>
+          )}
         </div>
 
         {view === "users" && (
