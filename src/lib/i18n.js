@@ -305,6 +305,7 @@ i18n
           "opportunities.title": "Opportunities",
           "opportunities.none": "No opportunities found.",
           "opportunities.paid": "💰 Paid",
+
           "opportunities.unpaid": "Unpaid",
           "opportunities.salary.notSpecified": "Amount Not Specified",
           "opportunities.hours": "Hours Offered",
@@ -373,6 +374,7 @@ i18n
           "announcementForm.cancel": "Cancel",
           "announcementForm.submit": "Submit",
           "announcementForm.hours": "Volunteer Hours",
+          "announcementForm.cpaid": "Paid",
 
 
 
@@ -408,6 +410,9 @@ i18n
           "gender.prefernottosay": "Prefer not to say",
           "settings.phone": "Phone Number",
           "settings.degree": "Degree",
+
+          //delete button
+          "delete.button": "Delete"
         },
       },
       ar: {
@@ -758,6 +763,7 @@ i18n
           "announcementForm.submit": "إرسال",
           "announcementForm.hours": "عدد ساعات التطوع",
           "announcementForm.hours.placeholder": "أدخل عدد ساعات التطوع",
+          "announcementForm.cpaid": "مدفوع",
 
 
 
@@ -811,6 +817,12 @@ i18n
           "gender.prefernottosay": "أفضل عدم الذكر",
           "settings.phone": "رقم الهاتف",
           "settings.degree": "الدرجة العلمية",
+
+
+          //delete button
+          "delete.button": "حذف"
+
+
         },
       },
     },

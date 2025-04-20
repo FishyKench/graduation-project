@@ -114,7 +114,26 @@ const [sortBy, setSortBy] = useState("");
     } else {
       console.error("❌ Supabase status update failed:", error);
     }
+    
   };
+  
+  const deleteAnnouncement = async (announcementId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this announcement?");
+    if (!confirmed) return;
+  
+    const { error } = await supabase
+      .from("announcements")
+      .delete()
+      .eq("id", announcementId);
+  
+    if (error) {
+      console.error("❌ Failed to delete announcement:", error.message);
+      return;
+    }
+  
+    setAnnouncements((prev) => prev.filter((a) => a.id !== announcementId));
+  };
+  
   
 
   const confirmHours = async (appId, hours) => {
@@ -220,12 +239,21 @@ const [sortBy, setSortBy] = useState("");
                           {new Date(announcement.created_at).toLocaleDateString()}
                         </p>
                       </div>
-                      <Button
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-                        onClick={() => fetchApplications(announcement.id)}
-                      >
-                        {t("admin.applications.view")}
-                      </Button>
+                      <div className="flex gap-2">
+  <Button
+    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+    onClick={() => fetchApplications(announcement.id)}
+  >
+    {t("admin.applications.view")}
+  </Button>
+  <Button
+    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+    onClick={() => deleteAnnouncement(announcement.id)}
+  >
+    ❌ {t("delete.button")}
+  </Button>
+</div>
+
                     </div>
                   ))}
                 </div>

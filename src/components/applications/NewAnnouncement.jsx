@@ -165,7 +165,7 @@ const NewAnnouncement = () => {
                 className="w-full px-3 py-2 border rounded-md"
               >
                 <option value="unpaid">{t("announcementForm.unpaid")}</option>
-                <option value="paid">{t("announcementForm.paid")}</option>
+                <option value="paid">{t("announcementForm.cpaid")}</option>
               </select>
             </div>
 
