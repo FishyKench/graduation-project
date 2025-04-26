@@ -46,6 +46,8 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
       const storedUser = localStorage.getItem("user");
       const storedFirstName = localStorage.getItem("firstName");
       const storedUserLevel = localStorage.getItem("userLevel");
+      const gender = localStorage.getItem("gender");
+
 
       if (storedUser && storedFirstName && storedUserLevel) {
         setUser(JSON.parse(storedUser));
@@ -75,16 +77,19 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
 
       const { data: userData, error: userError } = await supabase
         .from("users")
-        .select("fname, level")
+        .select("fname, level, gender")
+
         .eq("id", userId)
         .single();
 
-      if (!userError && userData) {
-        setFirstName(userData.fname);
-        setUserLevel(userData.level);
-        localStorage.setItem("firstName", userData.fname);
-        localStorage.setItem("userLevel", userData.level.toString());
-      }
+        if (!userError && userData) {
+          setFirstName(userData.fname);
+          setUserLevel(userData.level);
+          localStorage.setItem("firstName", userData.fname);
+          localStorage.setItem("userLevel", userData.level.toString());
+          localStorage.setItem("gender", userData.gender); 
+        }
+        
 
       setLoading(false);
     };
@@ -149,11 +154,16 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
                   variant="ghost"
                   className="relative h-10 w-10 rounded-full p-0"
                 >
-                  <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`}
-                    alt="Profile"
-                    className="rounded-full w-10 h-10"
-                  />
+<img
+  src={
+    localStorage.getItem("gender")?.toLowerCase() === "female"
+      ? "https://api.dicebear.com/9.x/miniavs/svg?seed=Liliana"
+      : "https://api.dicebear.com/9.x/miniavs/svg?seed=Mason"
+  }
+  alt="Profile"
+  className="rounded-full w-10 h-10"
+/>
+
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">

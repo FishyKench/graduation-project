@@ -238,6 +238,7 @@ i18n
           "profile.cv": "CV",
           "profile.contact": "Contact Information",
           "profile.contact.button": "Contact for Opportunities",
+          "profile.interest": "Interest",
 
           // Applications
           "applications.title": "Your Applications",

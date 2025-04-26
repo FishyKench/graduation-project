@@ -70,11 +70,18 @@ const ProfilePage = () => {
       <main className="flex-1 py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <div className="flex items-center gap-4 mb-6">
-            <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${displayProfile.email}`}
-              alt="Profile"
-              className="w-20 h-20 rounded-full"
-            />
+          <img
+  src={
+    displayProfile.gender?.toLowerCase() === "female"
+      ? "https://api.dicebear.com/9.x/miniavs/svg?seed=Liliana"
+      : "https://api.dicebear.com/9.x/miniavs/svg?seed=Mason"
+  }
+  alt="Profile"
+  className="w-20 h-20 rounded-full"
+/>
+
+
+
             <div>
               <h1 className="text-2xl font-semibold dark:text-white">
                 {`${displayProfile.fname} ${displayProfile.mname} ${displayProfile.lname}`}
