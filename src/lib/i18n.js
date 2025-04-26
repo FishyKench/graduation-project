@@ -347,6 +347,7 @@ i18n
           "opportunities.details.apply": "Apply Now",
           "opportunities.details.alreadyApplied": "Already Applied",
           "opportunities.details.orgCantApply": "Organizations Can't Apply",
+          "opportunities.details.notSpecified": "Not Specified",
 
 
 
@@ -719,6 +720,7 @@ i18n
           "opportunities.hours": "عدد الساعات",
           "opportunities.hours.notSpecified": "غير محدد",
           "opportunities.details.learnMore": "عرض المزيد",
+          "opportunities.details.notSpecified": "غير محدد",
 
           "opportunities.filter.byType": "تصفية حسب النوع",
           "opportunities.filter.byDegree": "تصفية حسب البرنامج",

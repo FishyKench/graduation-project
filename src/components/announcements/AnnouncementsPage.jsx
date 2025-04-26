@@ -59,10 +59,11 @@ const AnnouncementsPage = () => {
 
   const degreeFilters = [
     { id: "all", label: t("program.all"), icon: GraduationCap },
-    { id: "High School", label: t("program.highschool"), icon: School },
-    { id: "Undergraduate", label: t("program.undergraduate"), icon: BookOpen },
-    { id: "CO-OP", label: t("program.coop"), icon: GraduationCap },
+    { id: "highschool", label: t("program.highschool"), icon: School },
+    { id: "undergraduate", label: t("program.undergraduate"), icon: BookOpen },
+    { id: "coop", label: t("program.coop"), icon: GraduationCap },
   ];
+  
 
   const paidFilters = [
     { id: "all", label: t("opportunities.filter.paid.all"), icon: DollarSign },
@@ -71,31 +72,52 @@ const AnnouncementsPage = () => {
   ];
 
   const filteredAnnouncements = announcements
-    .filter((announcement) => {
-      const matchesType = selectedType === "all" || announcement.type === selectedType;
-      const matchesDegree = selectedDegree === "all" || announcement.degree === selectedDegree;
-      const matchesPaid =
-        selectedPaid === "all" ||
-        (selectedPaid === "paid" && announcement.paid) ||
-        (selectedPaid === "unpaid" && !announcement.paid);
-      const matchesSearch =
-        searchQuery === "" ||
-        announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (announcement.organization || "").toLowerCase().includes(searchQuery.toLowerCase());
+  .filter((announcement) => {
+    const matchesType = selectedType === "all" || announcement.type === selectedType;
 
-      return matchesType && matchesDegree && matchesPaid && matchesSearch;
-    })
-    .sort((a, b) => {
-      let aScore = 0;
-      let bScore = 0;
-      if (userInfo) {
-        if (a.location === userInfo.cities?.name || a.location === userInfo.cities?.regions?.name) aScore += 2;
-        if (b.location === userInfo.cities?.name || b.location === userInfo.cities?.regions?.name) bScore += 2;
-        if (a.degree === userInfo.degree) aScore += 1;
-        if (b.degree === userInfo.degree) bScore += 1;
-      }
-      return bScore - aScore;
-    });
+    const matchesDegree =
+      selectedDegree === "all" ||
+      (announcement.degree && announcement.degree.toLowerCase() === selectedDegree);
+
+    const matchesPaid =
+      selectedPaid === "all" ||
+      (selectedPaid === "paid" && announcement.paid) ||
+      (selectedPaid === "unpaid" && !announcement.paid);
+
+    const matchesSearch =
+      searchQuery === "" ||
+      announcement.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (announcement.organization || "").toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesType && matchesDegree && matchesPaid && matchesSearch;
+  })
+  .sort((a, b) => {
+    let aScore = 0;
+    let bScore = 0;
+    if (userInfo) {
+      if (
+        a.location === userInfo.cities?.name ||
+        a.location === userInfo.cities?.regions?.name
+      )
+        aScore += 2;
+      if (
+        b.location === userInfo.cities?.name ||
+        b.location === userInfo.cities?.regions?.name
+      )
+        bScore += 2;
+
+      if (
+        (a.degree || "").toLowerCase() === (userInfo.degree || "").toLowerCase()
+      )
+        aScore += 1;
+      if (
+        (b.degree || "").toLowerCase() === (userInfo.degree || "").toLowerCase()
+      )
+        bScore += 1;
+    }
+    return bScore - aScore;
+  });
+
 
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
@@ -105,7 +127,6 @@ const AnnouncementsPage = () => {
           {t("opportunities.title")}
         </h1>
 
-        {/* 🔍 Search */}
         <div className="relative mb-6">
           <input
             type="text"
