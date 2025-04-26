@@ -19,7 +19,7 @@ import supabase from "../../../createClient";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../lib/theme-provider";
 
-const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
+const Header = ({ onLanguageChange = () => { }, currentLanguage = "en" }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [firstName, setFirstName] = useState(
@@ -82,14 +82,14 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
         .eq("id", userId)
         .single();
 
-        if (!userError && userData) {
-          setFirstName(userData.fname);
-          setUserLevel(userData.level);
-          localStorage.setItem("firstName", userData.fname);
-          localStorage.setItem("userLevel", userData.level.toString());
-          localStorage.setItem("gender", userData.gender); 
-        }
-        
+      if (!userError && userData) {
+        setFirstName(userData.fname);
+        setUserLevel(userData.level);
+        localStorage.setItem("firstName", userData.fname);
+        localStorage.setItem("userLevel", userData.level.toString());
+        localStorage.setItem("gender", userData.gender);
+      }
+
 
       setLoading(false);
     };
@@ -154,15 +154,15 @@ const Header = ({ onLanguageChange = () => {}, currentLanguage = "en" }) => {
                   variant="ghost"
                   className="relative h-10 w-10 rounded-full p-0"
                 >
-<img
-  src={
-    localStorage.getItem("gender")?.toLowerCase() === "female"
-      ? "https://api.dicebear.com/9.x/miniavs/svg?seed=Liliana"
-      : "https://api.dicebear.com/9.x/miniavs/svg?seed=Mason"
-  }
-  alt="Profile"
-  className="rounded-full w-10 h-10"
-/>
+                  <img
+                    src={
+                      localStorage.getItem("gender")?.toLowerCase() === "female"
+                        ? "https://api.dicebear.com/9.x/miniavs/svg?seed=Liliana"
+                        : "https://api.dicebear.com/9.x/miniavs/svg?seed=Mason"
+                    }
+                    alt="Profile"
+                    className="rounded-full w-10 h-10"
+                  />
 
                 </Button>
               </DropdownMenuTrigger>
