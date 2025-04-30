@@ -19,7 +19,7 @@ const ApplicationsManagement = () => {
   const [confirmedHours, setConfirmedHours] = useState({});
   const [confirmingIds, setConfirmingIds] = useState(new Set());
   const [filterDegree, setFilterDegree] = useState("");
-const [sortBy, setSortBy] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const [sortBy, setSortBy] = useState("");
   const fetchApplications = async (announcementId) => {
     setSelectedAnnouncement(announcementId);
     setLoading(true);
-  
+
     const { data, error } = await supabase
       .from("applications")
       .select(`
@@ -58,43 +58,43 @@ const [sortBy, setSortBy] = useState("");
         )
       `)
       .eq("announcement_id", announcementId);
-  
+
     if (!error) setApplications(data);
     setLoading(false);
   };
-  
+
   const updateApplicationStatus = async (appId, newStatus) => {
     const { error } = await supabase
       .from("applications")
       .update({ status: newStatus })
       .eq("id", appId);
-  
+
     if (!error) {
       setApplications((prev) =>
         prev.map((app) => (app.id === appId ? { ...app, status: newStatus } : app))
       );
-  
+
       if (newStatus === "approved") {
         const announcementHours = getAnnouncementHours();
         setConfirmedHours((prev) => ({
           ...prev,
           [appId]: announcementHours,
         }));
-  
+
         const approvedApp = applications.find((a) => a.id === appId);
         const announcement = announcements.find((a) => a.id === selectedAnnouncement);
-  
+
         if (approvedApp) {
           console.log("📤 Attempting to send email...");
-  
+
           const payload = {
             to_name: `${approvedApp.users?.fname || "Unknown"} ${approvedApp.users?.lname || ""}`,
             to_email: approvedApp.users?.email || "",
             announcement_title: announcement?.title || "an opportunity",
           };
-  
+
           console.log("📧 Payload to EmailJS:", payload);
-  
+
           if (payload.to_email && payload.to_email.includes("@")) {
             emailjs
               .send("service_yhjmnef", "template_khmyg9u", payload, "O8BXGQavAHmhgqeeL")
@@ -114,27 +114,27 @@ const [sortBy, setSortBy] = useState("");
     } else {
       console.error("❌ Supabase status update failed:", error);
     }
-    
+
   };
-  
+
   const deleteAnnouncement = async (announcementId) => {
     const confirmed = window.confirm("Are you sure you want to delete this announcement?");
     if (!confirmed) return;
-  
+
     const { error } = await supabase
       .from("announcements")
       .delete()
       .eq("id", announcementId);
-  
+
     if (error) {
       console.error("❌ Failed to delete announcement:", error.message);
       return;
     }
-  
+
     setAnnouncements((prev) => prev.filter((a) => a.id !== announcementId));
   };
-  
-  
+
+
 
   const confirmHours = async (appId, hours) => {
     const app = applications.find((a) => a.id === appId);
@@ -240,19 +240,19 @@ const [sortBy, setSortBy] = useState("");
                         </p>
                       </div>
                       <div className="flex gap-2">
-  <Button
-    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-    onClick={() => fetchApplications(announcement.id)}
-  >
-    {t("admin.applications.view")}
-  </Button>
-  <Button
-    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-    onClick={() => deleteAnnouncement(announcement.id)}
-  >
-    ❌ {t("delete.button")}
-  </Button>
-</div>
+                        <Button
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                          onClick={() => fetchApplications(announcement.id)}
+                        >
+                          {t("admin.applications.view")}
+                        </Button>
+                        <Button
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                          onClick={() => deleteAnnouncement(announcement.id)}
+                        >
+                          ❌ {t("delete.button")}
+                        </Button>
+                      </div>
 
                     </div>
                   ))}
@@ -273,132 +273,132 @@ const [sortBy, setSortBy] = useState("");
               ) : applications.length === 0 ? (
                 <p className="text-center py-4 text-gray-600">{t("applications.none")}</p>
               ) : (
-                
+
                 <ul className="space-y-4">
                   <div className="flex flex-wrap gap-4 mb-4">
-  {/* Degree Filter */}
-  <select
-    className="border rounded px-2 py-1 text-sm"
-    value={filterDegree}
-    onChange={(e) => setFilterDegree(e.target.value)}
-  >
-    <option value="">All Degrees</option>
-    <option value="High School">High School</option>
-    <option value="CO-OP">CO-OP</option>
-    <option value="Undergraduate">Undergraduate</option>
-  </select>
+                    {/* Degree Filter */}
+                    <select
+                      className="border rounded px-2 py-1 text-sm"
+                      value={filterDegree}
+                      onChange={(e) => setFilterDegree(e.target.value)}
+                    >
+                      <option value="">All Degrees</option>
+                      <option value="High School">High School</option>
+                      <option value="CO-OP">CO-OP</option>
+                      <option value="Undergraduate">Undergraduate</option>
+                    </select>
 
-  {/* Hours Sort */}
-  <select
-    className="border rounded px-2 py-1 text-sm"
-    value={sortBy}
-    onChange={(e) => setSortBy(e.target.value)}
-  >
-    <option value="">Sort by</option>
-    <option value="most">Most Hours</option>
-    <option value="least">Least Hours</option>
-  </select>
-</div>
+                    {/* Hours Sort */}
+                    <select
+                      className="border rounded px-2 py-1 text-sm"
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                    >
+                      <option value="">Sort by</option>
+                      <option value="most">Most Hours</option>
+                      <option value="least">Least Hours</option>
+                    </select>
+                  </div>
 
-{applications
-  .filter((app) => {
-    if (filterDegree && app.users?.degree !== filterDegree) return false;
-    return true;
-  })
-  .sort((a, b) => {
-    if (sortBy === "most") return (b.completed_hours || 0) - (a.completed_hours || 0);
-    if (sortBy === "least") return (a.completed_hours || 0) - (b.completed_hours || 0);
-    return 0;
-  })
-  .map((app) => (
+                  {applications
+                    .filter((app) => {
+                      if (filterDegree && app.users?.degree !== filterDegree) return false;
+                      return true;
+                    })
+                    .sort((a, b) => {
+                      if (sortBy === "most") return (b.completed_hours || 0) - (a.completed_hours || 0);
+                      if (sortBy === "least") return (a.completed_hours || 0) - (b.completed_hours || 0);
+                      return 0;
+                    })
+                    .map((app) => (
 
-                    <li key={app.id} className="p-5 bg-white border border-gray-200 rounded-lg shadow-sm">
-                      <div className="flex items-center justify-between">
-                        <button
-                          onClick={() => navigate(`/profile/${app.users?.id}`)}
-                          className="text-lg font-semibold text-blue-600 hover:underline"
-                        >
-                          {app.users?.fname} {app.users?.mname} {app.users?.lname}
-                        </button>
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusClass(app.status)}`}
-                        >
-                          {t(`applications.status.${app.status}`)}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {t("profile.gender")}: {app.users?.gender || "N/A"} | {t("profile.age")}: {app.users?.age || "N/A"}
-                      </p>
-                      <p className="text-sm text-gray-600">{t("profile.degree")}: {app.users?.degree}</p>
-                      <p className="text-sm text-gray-600">
-                        {t("profile.location")}: {app.users?.cities?.regions?.name}, {app.users?.cities?.name}
-                      </p>
-                      {app.users?.cv && (
-                        <a
-                          href={app.users.cv}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline text-sm block mt-2"
-                        >
-                          {t("profile.cv")}
-                        </a>
-                      )}
+                      <li key={app.id} className="p-5 bg-white border border-gray-200 rounded-lg shadow-sm">
+                        <div className="flex items-center justify-between">
+                          <button
+                            onClick={() => navigate(`/profile/${app.users?.id}`)}
+                            className="text-lg font-semibold text-blue-600 hover:underline"
+                          >
+                            {app.users?.fname} {app.users?.mname} {app.users?.lname}
+                          </button>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-semibold border ${getStatusClass(app.status)}`}
+                          >
+                            {t(`applications.status.${app.status}`)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {t("profile.gender")}: {app.users?.gender || "N/A"} | {t("profile.age")}: {app.users?.age || "N/A"}
+                        </p>
+                        <p className="text-sm text-gray-600">{t("profile.degree")}: {app.users?.degree}</p>
+                        <p className="text-sm text-gray-600">
+                          {t("profile.location")}: {app.users?.cities?.regions?.name}, {app.users?.cities?.name}
+                        </p>
+                        {app.users?.cv && (
+                          <a
+                            href={app.users.cv}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline text-sm block mt-2"
+                          >
+                            {t("profile.cv")}
+                          </a>
+                        )}
 
-                      <div className="flex gap-2 mt-3 items-center flex-wrap">
-                        {app.status === "approved" && (
-                          <>
-                            <input
-                              type="number"
-                              min={0}
-                              value={confirmedHours[app.id] ?? getAnnouncementHours()}
-                              onChange={(e) => {
-                                if (!app.confirmed) {
-                                  setConfirmedHours({
-                                    ...confirmedHours,
-                                    [app.id]: e.target.value,
-                                  });
-                                }
-                              }}
-                              className={`w-24 p-1 border rounded text-sm ${app.confirmed ? "bg-gray-100 text-gray-500" : "bg-white"}`}
-                              disabled={app.confirmed}
-                            />
-                            {!app.confirmed ? (
+                        <div className="flex gap-2 mt-3 items-center flex-wrap">
+                          {app.status === "approved" && (
+                            <>
+                              <input
+                                type="number"
+                                min={0}
+                                value={confirmedHours[app.id] ?? getAnnouncementHours()}
+                                onChange={(e) => {
+                                  if (!app.confirmed) {
+                                    setConfirmedHours({
+                                      ...confirmedHours,
+                                      [app.id]: e.target.value,
+                                    });
+                                  }
+                                }}
+                                className={`w-24 p-1 border rounded text-sm ${app.confirmed ? "bg-gray-100 text-gray-500" : "bg-white"}`}
+                                disabled={app.confirmed}
+                              />
+                              {!app.confirmed ? (
+                                <Button
+                                  className="bg-purple-600 hover:bg-purple-700 text-white text-sm"
+                                  onClick={() =>
+                                    confirmHours(app.id, confirmedHours[app.id] ?? getAnnouncementHours())
+                                  }
+                                  disabled={confirmingIds.has(app.id)}
+                                >
+                                  {t("admin.applications.confirm")}
+                                </Button>
+                              ) : (
+                                <span className="text-green-700 text-sm font-medium">
+                                  ✔ {t("admin.applications.confirmed")}
+                                </span>
+                              )}
+                            </>
+                          )}
+
+                          {app.status === "pending" && (
+                            <>
                               <Button
-                                className="bg-purple-600 hover:bg-purple-700 text-white text-sm"
-                                onClick={() =>
-                                  confirmHours(app.id, confirmedHours[app.id] ?? getAnnouncementHours())
-                                }
-                                disabled={confirmingIds.has(app.id)}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() => updateApplicationStatus(app.id, "approved")}
                               >
-                                {t("admin.applications.confirm")}
+                                {t("admin.applications.approve")}
                               </Button>
-                            ) : (
-                              <span className="text-green-700 text-sm font-medium">
-                                ✔ {t("admin.applications.confirmed")}
-                              </span>
-                            )}
-                          </>
-                        )}
-
-                        {app.status === "pending" && (
-                          <>
-                            <Button
-                              className="bg-green-600 hover:bg-green-700 text-white"
-                              onClick={() => updateApplicationStatus(app.id, "approved")}
-                            >
-                              {t("admin.applications.approve")}
-                            </Button>
-                            <Button
-                              className="bg-red-600 hover:bg-red-700 text-white"
-                              onClick={() => updateApplicationStatus(app.id, "rejected")}
-                            >
-                              {t("admin.applications.reject")}
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </li>
-                  ))}
+                              <Button
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                onClick={() => updateApplicationStatus(app.id, "rejected")}
+                              >
+                                {t("admin.applications.reject")}
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </li>
+                    ))}
                 </ul>
               )}
             </div>

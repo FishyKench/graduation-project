@@ -184,6 +184,12 @@ const Header = ({ onLanguageChange = () => { }, currentLanguage = "en" }) => {
                     {t("admin.applications.title")}
                   </DropdownMenuItem>
                 )}
+                {userLevel === 3 && (
+  <DropdownMenuItem onClick={() => navigate("/admin-dashboard")}>
+    Admin Dashboard
+  </DropdownMenuItem>
+)}
+
                 <DropdownMenuItem onClick={() => navigate("/settings")}>
                   {t("settings")}
                 </DropdownMenuItem>
