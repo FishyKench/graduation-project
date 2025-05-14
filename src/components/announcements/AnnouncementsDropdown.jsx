@@ -49,9 +49,9 @@ const AnnouncementsDropdown = () => {
 
   const degreeFilters = [
     { id: "all", label: t("program.all"), icon: GraduationCap },
-    { id: "High School", label: t("program.highschool"), icon: School },
+    { id: "Highschool", label: t("program.highschool"), icon: School },
     { id: "Undergraduate", label: t("program.undergraduate"), icon: BookOpen },
-    { id: "CO-OP", label: t("program.coop"), icon: GraduationCap },
+    { id: "Coop", label: t("program.coop"), icon: GraduationCap },
   ];
 
   const getTranslatedDegree = (degree) => {
